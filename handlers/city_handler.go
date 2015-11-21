@@ -21,7 +21,7 @@ func NewCityHandler(mRepo *repositories.CityRepository, metricApi *databases.Met
 
 //Create and store user in database
 //string is provided by device, username by server
-func (ch *CityHandler) CreateCity(title string, coordslist []*services.Coordinate) error {
+func (ch *CityHandler) CreateCity(token string,title string, coordslist []*services.Coordinate) error {
 	//create userid
 	u, _ := uuid.NewV4()
 	id := u.String()

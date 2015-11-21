@@ -16,9 +16,10 @@ var _ = bytes.Equal
 
 type CitySvc interface {
 	// Parameters:
+	//  - Token
 	//  - Title
 	//  - Coords
-	CreateCity(title string, coords []*Coordinate) (err error)
+	CreateCity(token string, title string, coords []*Coordinate) (err error)
 	// Parameters:
 	//  - Coordinate
 	//  - Limit
@@ -52,16 +53,17 @@ func NewCitySvcClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot
 }
 
 // Parameters:
+//  - Token
 //  - Title
 //  - Coords
-func (p *CitySvcClient) CreateCity(title string, coords []*Coordinate) (err error) {
-	if err = p.sendCreateCity(title, coords); err != nil {
+func (p *CitySvcClient) CreateCity(token string, title string, coords []*Coordinate) (err error) {
+	if err = p.sendCreateCity(token, title, coords); err != nil {
 		return
 	}
 	return p.recvCreateCity()
 }
 
-func (p *CitySvcClient) sendCreateCity(title string, coords []*Coordinate) (err error) {
+func (p *CitySvcClient) sendCreateCity(token string, title string, coords []*Coordinate) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -72,6 +74,7 @@ func (p *CitySvcClient) sendCreateCity(title string, coords []*Coordinate) (err 
 		return
 	}
 	args := CitySvcCreateCityArgs{
+		Token:  token,
 		Title:  title,
 		Coords: coords,
 	}
@@ -103,16 +106,16 @@ func (p *CitySvcClient) recvCreateCity() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error42 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error43 error
-		error43, err = error42.Read(iprot)
+		error62 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error63 error
+		error63, err = error62.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error43
+		err = error63
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -181,16 +184,16 @@ func (p *CitySvcClient) recvGetNearBy() (value []*City, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error45 error
-		error45, err = error44.Read(iprot)
+		error64 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error65 error
+		error65, err = error64.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error45
+		err = error65
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -228,10 +231,10 @@ func (p *CitySvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewCitySvcProcessor(handler CitySvc) *CitySvcProcessor {
 
-	self46 := &CitySvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self46.processorMap["createCity"] = &citySvcProcessorCreateCity{handler: handler}
-	self46.processorMap["getNearBy"] = &citySvcProcessorGetNearBy{handler: handler}
-	return self46
+	self66 := &CitySvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self66.processorMap["createCity"] = &citySvcProcessorCreateCity{handler: handler}
+	self66.processorMap["getNearBy"] = &citySvcProcessorGetNearBy{handler: handler}
+	return self66
 }
 
 func (p *CitySvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -244,12 +247,12 @@ func (p *CitySvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x47 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x67 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x47.Write(oprot)
+	x67.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x47
+	return false, x67
 
 }
 
@@ -272,7 +275,7 @@ func (p *citySvcProcessorCreateCity) Process(seqId int32, iprot, oprot thrift.TP
 	iprot.ReadMessageEnd()
 	result := CitySvcCreateCityResult{}
 	var err2 error
-	if err2 = p.handler.CreateCity(args.Title, args.Coords); err2 != nil {
+	if err2 = p.handler.CreateCity(args.Token, args.Title, args.Coords); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createCity: "+err2.Error())
 		oprot.WriteMessageBegin("createCity", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -349,15 +352,21 @@ func (p *citySvcProcessorGetNearBy) Process(seqId int32, iprot, oprot thrift.TPr
 // HELPER FUNCTIONS AND STRUCTURES
 
 // Attributes:
+//  - Token
 //  - Title
 //  - Coords
 type CitySvcCreateCityArgs struct {
-	Title  string        `thrift:"title,1" json:"title"`
-	Coords []*Coordinate `thrift:"coords,2" json:"coords"`
+	Token  string        `thrift:"token,1" db:"token" json:"token"`
+	Title  string        `thrift:"title,2" db:"title" json:"title"`
+	Coords []*Coordinate `thrift:"coords,3" db:"coords" json:"coords"`
 }
 
 func NewCitySvcCreateCityArgs() *CitySvcCreateCityArgs {
 	return &CitySvcCreateCityArgs{}
+}
+
+func (p *CitySvcCreateCityArgs) GetToken() string {
+	return p.Token
 }
 
 func (p *CitySvcCreateCityArgs) GetTitle() string {
@@ -382,11 +391,15 @@ func (p *CitySvcCreateCityArgs) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
 		default:
@@ -404,16 +417,25 @@ func (p *CitySvcCreateCityArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *CitySvcCreateCityArgs) readField1(iprot thrift.TProtocol) error {
+func (p *CitySvcCreateCityArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *CitySvcCreateCityArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
 	} else {
 		p.Title = v
 	}
 	return nil
 }
 
-func (p *CitySvcCreateCityArgs) readField2(iprot thrift.TProtocol) error {
+func (p *CitySvcCreateCityArgs) ReadField3(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -421,11 +443,11 @@ func (p *CitySvcCreateCityArgs) readField2(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem48 := &Coordinate{}
-		if err := _elem48.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem48), err)
+		_elem68 := &Coordinate{}
+		if err := _elem68.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem68), err)
 		}
-		p.Coords = append(p.Coords, _elem48)
+		p.Coords = append(p.Coords, _elem68)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -443,6 +465,9 @@ func (p *CitySvcCreateCityArgs) Write(oprot thrift.TProtocol) error {
 	if err := p.writeField2(oprot); err != nil {
 		return err
 	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
 	if err := oprot.WriteFieldStop(); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
 	}
@@ -453,21 +478,34 @@ func (p *CitySvcCreateCityArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *CitySvcCreateCityArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("title", thrift.STRING, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:title: ", p), err)
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Title)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.title (1) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:title: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
 	}
 	return err
 }
 
 func (p *CitySvcCreateCityArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("coords", thrift.LIST, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:coords: ", p), err)
+	if err := oprot.WriteFieldBegin("title", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:title: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Title)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.title (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:title: ", p), err)
+	}
+	return err
+}
+
+func (p *CitySvcCreateCityArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("coords", thrift.LIST, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:coords: ", p), err)
 	}
 	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Coords)); err != nil {
 		return thrift.PrependError("error writing list begin: ", err)
@@ -481,7 +519,7 @@ func (p *CitySvcCreateCityArgs) writeField2(oprot thrift.TProtocol) (err error) 
 		return thrift.PrependError("error writing list end: ", err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:coords: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:coords: ", p), err)
 	}
 	return err
 }
@@ -550,8 +588,8 @@ func (p *CitySvcCreateCityResult) String() string {
 //  - Coordinate
 //  - Limit
 type CitySvcGetNearByArgs struct {
-	Coordinate *Coordinate `thrift:"coordinate,1" json:"coordinate"`
-	Limit      int32       `thrift:"limit,2" json:"limit"`
+	Coordinate *Coordinate `thrift:"coordinate,1" db:"coordinate" json:"coordinate"`
+	Limit      int32       `thrift:"limit,2" db:"limit" json:"limit"`
 }
 
 func NewCitySvcGetNearByArgs() *CitySvcGetNearByArgs {
@@ -589,11 +627,11 @@ func (p *CitySvcGetNearByArgs) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 		default:
@@ -611,7 +649,7 @@ func (p *CitySvcGetNearByArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *CitySvcGetNearByArgs) readField1(iprot thrift.TProtocol) error {
+func (p *CitySvcGetNearByArgs) ReadField1(iprot thrift.TProtocol) error {
 	p.Coordinate = &Coordinate{}
 	if err := p.Coordinate.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Coordinate), err)
@@ -619,7 +657,7 @@ func (p *CitySvcGetNearByArgs) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *CitySvcGetNearByArgs) readField2(iprot thrift.TProtocol) error {
+func (p *CitySvcGetNearByArgs) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -683,7 +721,7 @@ func (p *CitySvcGetNearByArgs) String() string {
 // Attributes:
 //  - Success
 type CitySvcGetNearByResult struct {
-	Success []*City `thrift:"success,0" json:"success,omitempty"`
+	Success []*City `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewCitySvcGetNearByResult() *CitySvcGetNearByResult {
@@ -714,7 +752,7 @@ func (p *CitySvcGetNearByResult) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 0:
-			if err := p.readField0(iprot); err != nil {
+			if err := p.ReadField0(iprot); err != nil {
 				return err
 			}
 		default:
@@ -732,7 +770,7 @@ func (p *CitySvcGetNearByResult) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *CitySvcGetNearByResult) readField0(iprot thrift.TProtocol) error {
+func (p *CitySvcGetNearByResult) ReadField0(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -740,11 +778,11 @@ func (p *CitySvcGetNearByResult) readField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*City, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem49 := &City{}
-		if err := _elem49.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem49), err)
+		_elem69 := &City{}
+		if err := _elem69.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem69), err)
 		}
-		p.Success = append(p.Success, _elem49)
+		p.Success = append(p.Success, _elem69)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

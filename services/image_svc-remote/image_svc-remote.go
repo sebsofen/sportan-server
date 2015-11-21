@@ -20,8 +20,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  void createCity(string token, string title,  coords)")
-	fmt.Fprintln(os.Stderr, "   getNearBy(Coordinate coordinate, i32 limit)")
+	fmt.Fprintln(os.Stderr, "  Image getImageById(string id)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -109,73 +108,21 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := services.NewCitySvcClientFactory(trans, protocolFactory)
+	client := services.NewImageSvcClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "createCity":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "CreateCity requires 3 args")
+	case "getImageById":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetImageById requires 1 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		arg72 := flag.Arg(3)
-		mbTrans73 := thrift.NewTMemoryBufferLen(len(arg72))
-		defer mbTrans73.Close()
-		_, err74 := mbTrans73.WriteString(arg72)
-		if err74 != nil {
-			Usage()
-			return
-		}
-		factory75 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt76 := factory75.GetProtocol(mbTrans73)
-		containerStruct2 := services.NewCitySvcCreateCityArgs()
-		err77 := containerStruct2.ReadField3(jsProt76)
-		if err77 != nil {
-			Usage()
-			return
-		}
-		argvalue2 := containerStruct2.Coords
-		value2 := argvalue2
-		fmt.Print(client.CreateCity(value0, value1, value2))
-		fmt.Print("\n")
-		break
-	case "getNearBy":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetNearBy requires 2 args")
-			flag.Usage()
-		}
-		arg78 := flag.Arg(1)
-		mbTrans79 := thrift.NewTMemoryBufferLen(len(arg78))
-		defer mbTrans79.Close()
-		_, err80 := mbTrans79.WriteString(arg78)
-		if err80 != nil {
-			Usage()
-			return
-		}
-		factory81 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt82 := factory81.GetProtocol(mbTrans79)
-		argvalue0 := services.NewCoordinate()
-		err83 := argvalue0.Read(jsProt82)
-		if err83 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		tmp1, err84 := (strconv.Atoi(flag.Arg(2)))
-		if err84 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.GetNearBy(value0, value1))
+		fmt.Print(client.GetImageById(value0))
 		fmt.Print("\n")
 		break
 	case "":

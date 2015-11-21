@@ -106,16 +106,16 @@ func (p *AreaSvcClient) recvCreateArea() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error19 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error20 error
-		error20, err = error19.Read(iprot)
+		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error40 error
+		error40, err = error39.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error20
+		err = error40
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -184,16 +184,16 @@ func (p *AreaSvcClient) recvGetNearBy() (value []*Area, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error21 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error22 error
-		error22, err = error21.Read(iprot)
+		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error42 error
+		error42, err = error41.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error22
+		err = error42
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -231,10 +231,10 @@ func (p *AreaSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewAreaSvcProcessor(handler AreaSvc) *AreaSvcProcessor {
 
-	self23 := &AreaSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self23.processorMap["createArea"] = &areaSvcProcessorCreateArea{handler: handler}
-	self23.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
-	return self23
+	self43 := &AreaSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self43.processorMap["createArea"] = &areaSvcProcessorCreateArea{handler: handler}
+	self43.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
+	return self43
 }
 
 func (p *AreaSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -247,12 +247,12 @@ func (p *AreaSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x24 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x44 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x24.Write(oprot)
+	x44.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x24
+	return false, x44
 
 }
 
@@ -356,9 +356,9 @@ func (p *areaSvcProcessorGetNearBy) Process(seqId int32, iprot, oprot thrift.TPr
 //  - Description
 //  - Coords
 type AreaSvcCreateAreaArgs struct {
-	Title       string        `thrift:"title,1" json:"title"`
-	Description string        `thrift:"description,2" json:"description"`
-	Coords      []*Coordinate `thrift:"coords,3" json:"coords"`
+	Title       string        `thrift:"title,1" db:"title" json:"title"`
+	Description string        `thrift:"description,2" db:"description" json:"description"`
+	Coords      []*Coordinate `thrift:"coords,3" db:"coords" json:"coords"`
 }
 
 func NewAreaSvcCreateAreaArgs() *AreaSvcCreateAreaArgs {
@@ -391,15 +391,15 @@ func (p *AreaSvcCreateAreaArgs) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 		case 3:
-			if err := p.readField3(iprot); err != nil {
+			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
 		default:
@@ -417,7 +417,7 @@ func (p *AreaSvcCreateAreaArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcCreateAreaArgs) readField1(iprot thrift.TProtocol) error {
+func (p *AreaSvcCreateAreaArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -426,7 +426,7 @@ func (p *AreaSvcCreateAreaArgs) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcCreateAreaArgs) readField2(iprot thrift.TProtocol) error {
+func (p *AreaSvcCreateAreaArgs) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -435,7 +435,7 @@ func (p *AreaSvcCreateAreaArgs) readField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcCreateAreaArgs) readField3(iprot thrift.TProtocol) error {
+func (p *AreaSvcCreateAreaArgs) ReadField3(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -443,11 +443,11 @@ func (p *AreaSvcCreateAreaArgs) readField3(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem25 := &Coordinate{}
-		if err := _elem25.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem25), err)
+		_elem45 := &Coordinate{}
+		if err := _elem45.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem45), err)
 		}
-		p.Coords = append(p.Coords, _elem25)
+		p.Coords = append(p.Coords, _elem45)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -588,8 +588,8 @@ func (p *AreaSvcCreateAreaResult) String() string {
 //  - Coordinate
 //  - Limit
 type AreaSvcGetNearByArgs struct {
-	Coordinate *Coordinate `thrift:"coordinate,1" json:"coordinate"`
-	Limit      int32       `thrift:"limit,2" json:"limit"`
+	Coordinate *Coordinate `thrift:"coordinate,1" db:"coordinate" json:"coordinate"`
+	Limit      int32       `thrift:"limit,2" db:"limit" json:"limit"`
 }
 
 func NewAreaSvcGetNearByArgs() *AreaSvcGetNearByArgs {
@@ -627,11 +627,11 @@ func (p *AreaSvcGetNearByArgs) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 		default:
@@ -649,7 +649,7 @@ func (p *AreaSvcGetNearByArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcGetNearByArgs) readField1(iprot thrift.TProtocol) error {
+func (p *AreaSvcGetNearByArgs) ReadField1(iprot thrift.TProtocol) error {
 	p.Coordinate = &Coordinate{}
 	if err := p.Coordinate.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Coordinate), err)
@@ -657,7 +657,7 @@ func (p *AreaSvcGetNearByArgs) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcGetNearByArgs) readField2(iprot thrift.TProtocol) error {
+func (p *AreaSvcGetNearByArgs) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -721,7 +721,7 @@ func (p *AreaSvcGetNearByArgs) String() string {
 // Attributes:
 //  - Success
 type AreaSvcGetNearByResult struct {
-	Success []*Area `thrift:"success,0" json:"success,omitempty"`
+	Success []*Area `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewAreaSvcGetNearByResult() *AreaSvcGetNearByResult {
@@ -752,7 +752,7 @@ func (p *AreaSvcGetNearByResult) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 0:
-			if err := p.readField0(iprot); err != nil {
+			if err := p.ReadField0(iprot); err != nil {
 				return err
 			}
 		default:
@@ -770,7 +770,7 @@ func (p *AreaSvcGetNearByResult) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcGetNearByResult) readField0(iprot thrift.TProtocol) error {
+func (p *AreaSvcGetNearByResult) ReadField0(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -778,11 +778,11 @@ func (p *AreaSvcGetNearByResult) readField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*Area, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem26 := &Area{}
-		if err := _elem26.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem26), err)
+		_elem46 := &Area{}
+		if err := _elem46.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem46), err)
 		}
-		p.Success = append(p.Success, _elem26)
+		p.Success = append(p.Success, _elem46)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

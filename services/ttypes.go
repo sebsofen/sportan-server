@@ -20,8 +20,8 @@ var GoUnusedProtection__ int
 //  - What
 //  - Why
 type InvalidOperation struct {
-	What int32  `thrift:"what,1" json:"what"`
-	Why  string `thrift:"why,2" json:"why"`
+	What int32  `thrift:"what,1" db:"what" json:"what"`
+	Why  string `thrift:"why,2" db:"why" json:"why"`
 }
 
 func NewInvalidOperation() *InvalidOperation {
@@ -50,11 +50,11 @@ func (p *InvalidOperation) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 		default:
@@ -72,7 +72,7 @@ func (p *InvalidOperation) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *InvalidOperation) readField1(iprot thrift.TProtocol) error {
+func (p *InvalidOperation) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -81,7 +81,7 @@ func (p *InvalidOperation) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *InvalidOperation) readField2(iprot thrift.TProtocol) error {
+func (p *InvalidOperation) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -147,11 +147,106 @@ func (p *InvalidOperation) Error() string {
 }
 
 // Attributes:
+//  - Message
+type InvalidToken struct {
+	Message string `thrift:"message,1" db:"message" json:"message"`
+}
+
+func NewInvalidToken() *InvalidToken {
+	return &InvalidToken{}
+}
+
+func (p *InvalidToken) GetMessage() string {
+	return p.Message
+}
+func (p *InvalidToken) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *InvalidToken) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Message = v
+	}
+	return nil
+}
+
+func (p *InvalidToken) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("InvalidToken"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *InvalidToken) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("message", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:message: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Message)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.message (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:message: ", p), err)
+	}
+	return err
+}
+
+func (p *InvalidToken) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("InvalidToken(%+v)", *p)
+}
+
+func (p *InvalidToken) Error() string {
+	return p.String()
+}
+
+// Attributes:
 //  - Identifier
 //  - Passwordhash
 type UserCredentials struct {
-	Identifier   string  `thrift:"identifier,1,required" json:"identifier"`
-	Passwordhash *string `thrift:"passwordhash,2" json:"passwordhash,omitempty"`
+	Identifier   string  `thrift:"identifier,1,required" db:"identifier" json:"identifier"`
+	Passwordhash *string `thrift:"passwordhash,2" db:"passwordhash" json:"passwordhash,omitempty"`
 }
 
 func NewUserCredentials() *UserCredentials {
@@ -191,12 +286,12 @@ func (p *UserCredentials) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 			issetIdentifier = true
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 		default:
@@ -217,7 +312,7 @@ func (p *UserCredentials) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserCredentials) readField1(iprot thrift.TProtocol) error {
+func (p *UserCredentials) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -226,7 +321,7 @@ func (p *UserCredentials) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserCredentials) readField2(iprot thrift.TProtocol) error {
+func (p *UserCredentials) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -292,9 +387,11 @@ func (p *UserCredentials) String() string {
 // Attributes:
 //  - Identifier
 //  - Username
+//  - Profilepicture
 type UserProfile struct {
-	Identifier *string `thrift:"identifier,1" json:"identifier,omitempty"`
-	Username   *string `thrift:"username,2" json:"username,omitempty"`
+	Identifier     *string `thrift:"identifier,1" db:"identifier" json:"identifier,omitempty"`
+	Username       *string `thrift:"username,2" db:"username" json:"username,omitempty"`
+	Profilepicture []byte  `thrift:"profilepicture,3" db:"profilepicture" json:"profilepicture,omitempty"`
 }
 
 func NewUserProfile() *UserProfile {
@@ -318,12 +415,22 @@ func (p *UserProfile) GetUsername() string {
 	}
 	return *p.Username
 }
+
+var UserProfile_Profilepicture_DEFAULT []byte
+
+func (p *UserProfile) GetProfilepicture() []byte {
+	return p.Profilepicture
+}
 func (p *UserProfile) IsSetIdentifier() bool {
 	return p.Identifier != nil
 }
 
 func (p *UserProfile) IsSetUsername() bool {
 	return p.Username != nil
+}
+
+func (p *UserProfile) IsSetProfilepicture() bool {
+	return p.Profilepicture != nil
 }
 
 func (p *UserProfile) Read(iprot thrift.TProtocol) error {
@@ -341,11 +448,15 @@ func (p *UserProfile) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
 		default:
@@ -363,7 +474,7 @@ func (p *UserProfile) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) readField1(iprot thrift.TProtocol) error {
+func (p *UserProfile) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -372,11 +483,20 @@ func (p *UserProfile) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) readField2(iprot thrift.TProtocol) error {
+func (p *UserProfile) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
 		p.Username = &v
+	}
+	return nil
+}
+
+func (p *UserProfile) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBinary(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Profilepicture = v
 	}
 	return nil
 }
@@ -389,6 +509,9 @@ func (p *UserProfile) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -430,6 +553,21 @@ func (p *UserProfile) writeField2(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
+func (p *UserProfile) writeField3(oprot thrift.TProtocol) (err error) {
+	if p.IsSetProfilepicture() {
+		if err := oprot.WriteFieldBegin("profilepicture", thrift.STRING, 3); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:profilepicture: ", p), err)
+		}
+		if err := oprot.WriteBinary(p.Profilepicture); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.profilepicture (3) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 3:profilepicture: ", p), err)
+		}
+	}
+	return err
+}
+
 func (p *UserProfile) String() string {
 	if p == nil {
 		return "<nil>"
@@ -441,8 +579,8 @@ func (p *UserProfile) String() string {
 //  - Token
 //  - ValidityDuration
 type ThriftToken struct {
-	Token            string `thrift:"token,1,required" json:"token"`
-	ValidityDuration int64  `thrift:"validityDuration,2,required" json:"validityDuration"`
+	Token            string `thrift:"token,1,required" db:"token" json:"token"`
+	ValidityDuration int64  `thrift:"validityDuration,2,required" db:"validityDuration" json:"validityDuration"`
 }
 
 func NewThriftToken() *ThriftToken {
@@ -474,12 +612,12 @@ func (p *ThriftToken) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 			issetToken = true
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 			issetValidityDuration = true
@@ -504,7 +642,7 @@ func (p *ThriftToken) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *ThriftToken) readField1(iprot thrift.TProtocol) error {
+func (p *ThriftToken) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -513,7 +651,7 @@ func (p *ThriftToken) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *ThriftToken) readField2(iprot thrift.TProtocol) error {
+func (p *ThriftToken) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -578,8 +716,8 @@ func (p *ThriftToken) String() string {
 //  - Lat
 //  - Lon
 type Coordinate struct {
-	Lat float64 `thrift:"lat,1,required" json:"lat"`
-	Lon float64 `thrift:"lon,2,required" json:"lon"`
+	Lat float64 `thrift:"lat,1,required" db:"lat" json:"lat"`
+	Lon float64 `thrift:"lon,2,required" db:"lon" json:"lon"`
 }
 
 func NewCoordinate() *Coordinate {
@@ -611,12 +749,12 @@ func (p *Coordinate) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 			issetLat = true
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 			issetLon = true
@@ -641,7 +779,7 @@ func (p *Coordinate) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *Coordinate) readField1(iprot thrift.TProtocol) error {
+func (p *Coordinate) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -650,7 +788,7 @@ func (p *Coordinate) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *Coordinate) readField2(iprot thrift.TProtocol) error {
+func (p *Coordinate) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -715,8 +853,8 @@ func (p *Coordinate) String() string {
 //  - ID
 //  - Title
 type Area struct {
-	ID    string `thrift:"id,1,required" json:"id"`
-	Title string `thrift:"title,2,required" json:"title"`
+	ID    string `thrift:"id,1,required" db:"id" json:"id"`
+	Title string `thrift:"title,2,required" db:"title" json:"title"`
 }
 
 func NewArea() *Area {
@@ -748,12 +886,12 @@ func (p *Area) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 			issetID = true
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 			issetTitle = true
@@ -778,7 +916,7 @@ func (p *Area) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *Area) readField1(iprot thrift.TProtocol) error {
+func (p *Area) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -787,7 +925,7 @@ func (p *Area) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *Area) readField2(iprot thrift.TProtocol) error {
+func (p *Area) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -854,10 +992,10 @@ func (p *Area) String() string {
 //  - Coords
 //  - Center
 type City struct {
-	ID     string        `thrift:"id,1,required" json:"id"`
-	Name   string        `thrift:"name,2,required" json:"name"`
-	Coords []*Coordinate `thrift:"coords,3" json:"coords,omitempty"`
-	Center *Coordinate   `thrift:"center,4" json:"center,omitempty"`
+	ID     string        `thrift:"id,1,required" db:"id" json:"id"`
+	Name   string        `thrift:"name,2,required" db:"name" json:"name"`
+	Coords []*Coordinate `thrift:"coords,3" db:"coords" json:"coords,omitempty"`
+	Center *Coordinate   `thrift:"center,4" db:"center" json:"center,omitempty"`
 }
 
 func NewCity() *City {
@@ -912,21 +1050,21 @@ func (p *City) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if err := p.readField1(iprot); err != nil {
+			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
 			issetID = true
 		case 2:
-			if err := p.readField2(iprot); err != nil {
+			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
 			issetName = true
 		case 3:
-			if err := p.readField3(iprot); err != nil {
+			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
 		case 4:
-			if err := p.readField4(iprot); err != nil {
+			if err := p.ReadField4(iprot); err != nil {
 				return err
 			}
 		default:
@@ -950,7 +1088,7 @@ func (p *City) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *City) readField1(iprot thrift.TProtocol) error {
+func (p *City) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -959,7 +1097,7 @@ func (p *City) readField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *City) readField2(iprot thrift.TProtocol) error {
+func (p *City) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -968,7 +1106,7 @@ func (p *City) readField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *City) readField3(iprot thrift.TProtocol) error {
+func (p *City) ReadField3(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -988,7 +1126,7 @@ func (p *City) readField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *City) readField4(iprot thrift.TProtocol) error {
+func (p *City) ReadField4(iprot thrift.TProtocol) error {
 	p.Center = &Coordinate{}
 	if err := p.Center.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Center), err)
@@ -1090,4 +1228,437 @@ func (p *City) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("City(%+v)", *p)
+}
+
+// Attributes:
+//  - ID
+//  - Content
+//  - Creator
+type Image struct {
+	ID      *string `thrift:"id,1" db:"id" json:"id,omitempty"`
+	Content *string `thrift:"content,2" db:"content" json:"content,omitempty"`
+	Creator *string `thrift:"creator,3" db:"creator" json:"creator,omitempty"`
+}
+
+func NewImage() *Image {
+	return &Image{}
+}
+
+var Image_ID_DEFAULT string
+
+func (p *Image) GetID() string {
+	if !p.IsSetID() {
+		return Image_ID_DEFAULT
+	}
+	return *p.ID
+}
+
+var Image_Content_DEFAULT string
+
+func (p *Image) GetContent() string {
+	if !p.IsSetContent() {
+		return Image_Content_DEFAULT
+	}
+	return *p.Content
+}
+
+var Image_Creator_DEFAULT string
+
+func (p *Image) GetCreator() string {
+	if !p.IsSetCreator() {
+		return Image_Creator_DEFAULT
+	}
+	return *p.Creator
+}
+func (p *Image) IsSetID() bool {
+	return p.ID != nil
+}
+
+func (p *Image) IsSetContent() bool {
+	return p.Content != nil
+}
+
+func (p *Image) IsSetCreator() bool {
+	return p.Creator != nil
+}
+
+func (p *Image) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.ReadField3(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *Image) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ID = &v
+	}
+	return nil
+}
+
+func (p *Image) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Content = &v
+	}
+	return nil
+}
+
+func (p *Image) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Creator = &v
+	}
+	return nil
+}
+
+func (p *Image) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Image"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *Image) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetID() {
+		if err := oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:id: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.ID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.id (1) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:id: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Image) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetContent() {
+		if err := oprot.WriteFieldBegin("content", thrift.STRING, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:content: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Content)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.content (2) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:content: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Image) writeField3(oprot thrift.TProtocol) (err error) {
+	if p.IsSetCreator() {
+		if err := oprot.WriteFieldBegin("creator", thrift.STRING, 3); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:creator: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Creator)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.creator (3) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 3:creator: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Image) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Image(%+v)", *p)
+}
+
+// Attributes:
+//  - ID
+//  - Name
+//  - Icon
+//  - Iconid
+type Sport struct {
+	ID     *string `thrift:"id,1" db:"id" json:"id,omitempty"`
+	Name   *string `thrift:"name,2" db:"name" json:"name,omitempty"`
+	Icon   *Image  `thrift:"icon,3" db:"icon" json:"icon,omitempty"`
+	Iconid *string `thrift:"iconid,4" db:"iconid" json:"iconid,omitempty"`
+}
+
+func NewSport() *Sport {
+	return &Sport{}
+}
+
+var Sport_ID_DEFAULT string
+
+func (p *Sport) GetID() string {
+	if !p.IsSetID() {
+		return Sport_ID_DEFAULT
+	}
+	return *p.ID
+}
+
+var Sport_Name_DEFAULT string
+
+func (p *Sport) GetName() string {
+	if !p.IsSetName() {
+		return Sport_Name_DEFAULT
+	}
+	return *p.Name
+}
+
+var Sport_Icon_DEFAULT *Image
+
+func (p *Sport) GetIcon() *Image {
+	if !p.IsSetIcon() {
+		return Sport_Icon_DEFAULT
+	}
+	return p.Icon
+}
+
+var Sport_Iconid_DEFAULT string
+
+func (p *Sport) GetIconid() string {
+	if !p.IsSetIconid() {
+		return Sport_Iconid_DEFAULT
+	}
+	return *p.Iconid
+}
+func (p *Sport) IsSetID() bool {
+	return p.ID != nil
+}
+
+func (p *Sport) IsSetName() bool {
+	return p.Name != nil
+}
+
+func (p *Sport) IsSetIcon() bool {
+	return p.Icon != nil
+}
+
+func (p *Sport) IsSetIconid() bool {
+	return p.Iconid != nil
+}
+
+func (p *Sport) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.ReadField3(iprot); err != nil {
+				return err
+			}
+		case 4:
+			if err := p.ReadField4(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *Sport) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ID = &v
+	}
+	return nil
+}
+
+func (p *Sport) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Name = &v
+	}
+	return nil
+}
+
+func (p *Sport) ReadField3(iprot thrift.TProtocol) error {
+	p.Icon = &Image{}
+	if err := p.Icon.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Icon), err)
+	}
+	return nil
+}
+
+func (p *Sport) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.Iconid = &v
+	}
+	return nil
+}
+
+func (p *Sport) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Sport"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *Sport) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetID() {
+		if err := oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:id: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.ID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.id (1) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:id: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Sport) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetName() {
+		if err := oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:name: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Name)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.name (2) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:name: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Sport) writeField3(oprot thrift.TProtocol) (err error) {
+	if p.IsSetIcon() {
+		if err := oprot.WriteFieldBegin("icon", thrift.STRUCT, 3); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:icon: ", p), err)
+		}
+		if err := p.Icon.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Icon), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 3:icon: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Sport) writeField4(oprot thrift.TProtocol) (err error) {
+	if p.IsSetIconid() {
+		if err := oprot.WriteFieldBegin("iconid", thrift.STRING, 4); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:iconid: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Iconid)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.iconid (4) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:iconid: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Sport) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Sport(%+v)", *p)
 }

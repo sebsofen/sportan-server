@@ -26,12 +26,27 @@ func NewAppServer(cfg Configuration) *AppServer {
 	//register User handler and stuff
 	userCollection := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, "Users")
 	userRepo := repositories.NewUserRepository(userCollection)
-	processor.RegisterProcessor("User", services.NewUserSvcProcessor(handlers.NewUserHandler(userRepo, metricsLogging)))
+	userHandler := handlers.NewUserHandler(userRepo, metricsLogging)
+	processor.RegisterProcessor("User", services.NewUserSvcProcessor(userHandler))
+
+	//register Image handler and stuff
+	imageCollection := databases.NewMongoConfig(cfg.MongoHost,cfg.MongoDatabase, "Images")
+	imageRepo := repositories.NewImageRepository(imageCollection)
+	imageHandler := handlers.NewImageHandler(imageRepo)
+	processor.RegisterProcessor("Image", services.NewImageSvcProcessor(imageHandler))
+
 
 	//register city handler and stuff
 	cityCollection := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, "Cities")
 	cityRepo := repositories.NewCityRepository(cityCollection)
 	processor.RegisterProcessor("City", services.NewCitySvcProcessor(handlers.NewCityHandler(cityRepo, metricsLogging)))
+
+
+	//register sporthandler and stuff
+	sportCollection := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, "Sports")
+	sportRepo := repositories.NewSportRepository(sportCollection,imageRepo)
+	sportHandler := handlers.NewSportHandler(sportRepo,userRepo, imageRepo, metricsLogging)
+	processor.RegisterProcessor("Sport", services.NewSportSvcProcessor(sportHandler))
 
 
 	//register area handler and stuff
