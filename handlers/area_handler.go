@@ -6,43 +6,78 @@ import (
 	"sportan/services"
 
 	"github.com/nu7hatch/gouuid"
+	"fmt"
 )
 
 type AreaHandler struct {
 	repo   *repositories.AreaRepository
 	metric *databases.MetricApi
+	userR *repositories.UserRepository
 }
 
-func NewAreaHandler(mRepo *repositories.AreaRepository, metricApi *databases.MetricApi) *AreaHandler {
+func NewAreaHandler(mRepo *repositories.AreaRepository, userR *repositories.UserRepository, metricApi *databases.MetricApi) *AreaHandler {
 	return &AreaHandler{
 		repo:   mRepo,
 		metric: metricApi,
+		userR : userR,
 	}
 }
 
-//Create and store user in database
-//string is provided by device, username by server
-func (ch *AreaHandler) CreateArea(title string, description string, coordslist []*services.Coordinate) error {
-	//create userid
-	u, _ := uuid.NewV4()
-	id := u.String()
-	centerCoord := &services.Coordinate{
-		Lat: 0.0,
-		Lon: 0.0,
+
+
+func (ch *AreaHandler) CreateArea(token string, area *services.Area) error {
+	userid, _ := ch.userR.GetUserIdFromToken(token)
+
+	if ch.userR.IsAdmin(userid) {
+		u, _ := uuid.NewV4()
+		id := u.String()
+		centerCoord := &services.Coordinate{
+			Lat: 0.0,
+			Lon: 0.0,
+		}
+
+		for _, v := range area.Coords {
+			centerCoord.Lat += v.Lat
+			centerCoord.Lon += v.Lon
+		}
+		centerCoord.Lat /= float64(len(area.Coords))
+		centerCoord.Lon /= float64(len(area.Coords))
+		area.Center = centerCoord
+		area.ID = &id
+
+		ch.repo.CreateArea(area)
+
+		return nil
+
+	}else {
+		return  nil
 	}
 
-	for _, v := range coordslist {
-		centerCoord.Lat += v.Lat
-		centerCoord.Lon += v.Lon
+
+}
+
+func (ch *AreaHandler) GetAllAreasInCity(areaid string) ([]*services.Area, error) {
+	return ch.repo.GetAllAreasInCity(areaid)
+}
+
+func (ch *AreaHandler) GetAreaById(id string) (*services.Area, error) {
+	return ch.repo.GetAreaById(id), nil
+}
+
+
+func (ch *AreaHandler) UpdateArea(token string, area *services.Area) error {
+	fmt.Println("tolken " + token)
+	userid, _ := ch.userR.GetUserIdFromToken(token)
+
+	if ch.userR.IsAdmin(userid) {
+		ch.repo.UpdateArea(area)
+
 	}
-	centerCoord.Lat /= float64(len(coordslist))
-	centerCoord.Lon /= float64(len(coordslist))
-	err := ch.repo.CreateArea(id, title, description, coordslist, centerCoord)
-	if err != nil {
-		panic(err)
-	}
+
 	return nil
 }
+
+
 
 func (ch *AreaHandler) GetNearBy(coord *services.Coordinate, limit int32) ([]*services.Area, error) {
 
@@ -55,8 +90,8 @@ func (ch *AreaHandler) GetNearBy(coord *services.Coordinate, limit int32) ([]*se
 
 	for i, area := range *areas {
 		sAreas[i] = &services.Area{
-			Title: area.Title,
-			ID:    area.ID,
+			Title: &area.Title,
+			ID:    &area.ID,
 		}
 
 	}

@@ -89,6 +89,11 @@ func (rep *UserRepository) GetUserIdFromToken(token string) (string, error) {
 	return userid, err
 }
 
+//TODO TO BE IMPLEMENTED
+func (rep *UserRepository) IsAdmin(userid string) bool {
+	return true
+}
+
 //hash password
 func (rep *UserRepository) HashPw(text string) string {
 	hasher := md5.New()

@@ -20,8 +20,11 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  void createArea(string title, string description,  coords)")
+	fmt.Fprintln(os.Stderr, "  void createArea(string token, Area area)")
+	fmt.Fprintln(os.Stderr, "  void updateArea(string token, Area area)")
 	fmt.Fprintln(os.Stderr, "   getNearBy(Coordinate coordinate, i32 limit)")
+	fmt.Fprintln(os.Stderr, "   getAllAreasInCity(string cityid)")
+	fmt.Fprintln(os.Stderr, "  Area getAreaById(string id)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -117,33 +120,57 @@ func main() {
 
 	switch cmd {
 	case "createArea":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "CreateArea requires 3 args")
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "CreateArea requires 2 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
+		arg56 := flag.Arg(2)
+		mbTrans57 := thrift.NewTMemoryBufferLen(len(arg56))
+		defer mbTrans57.Close()
+		_, err58 := mbTrans57.WriteString(arg56)
+		if err58 != nil {
+			Usage()
+			return
+		}
+		factory59 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt60 := factory59.GetProtocol(mbTrans57)
+		argvalue1 := services.NewArea()
+		err61 := argvalue1.Read(jsProt60)
+		if err61 != nil {
+			Usage()
+			return
+		}
 		value1 := argvalue1
-		arg49 := flag.Arg(3)
-		mbTrans50 := thrift.NewTMemoryBufferLen(len(arg49))
-		defer mbTrans50.Close()
-		_, err51 := mbTrans50.WriteString(arg49)
-		if err51 != nil {
+		fmt.Print(client.CreateArea(value0, value1))
+		fmt.Print("\n")
+		break
+	case "updateArea":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "UpdateArea requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		arg63 := flag.Arg(2)
+		mbTrans64 := thrift.NewTMemoryBufferLen(len(arg63))
+		defer mbTrans64.Close()
+		_, err65 := mbTrans64.WriteString(arg63)
+		if err65 != nil {
 			Usage()
 			return
 		}
-		factory52 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt53 := factory52.GetProtocol(mbTrans50)
-		containerStruct2 := services.NewAreaSvcCreateAreaArgs()
-		err54 := containerStruct2.ReadField3(jsProt53)
-		if err54 != nil {
+		factory66 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt67 := factory66.GetProtocol(mbTrans64)
+		argvalue1 := services.NewArea()
+		err68 := argvalue1.Read(jsProt67)
+		if err68 != nil {
 			Usage()
 			return
 		}
-		argvalue2 := containerStruct2.Coords
-		value2 := argvalue2
-		fmt.Print(client.CreateArea(value0, value1, value2))
+		value1 := argvalue1
+		fmt.Print(client.UpdateArea(value0, value1))
 		fmt.Print("\n")
 		break
 	case "getNearBy":
@@ -151,31 +178,51 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetNearBy requires 2 args")
 			flag.Usage()
 		}
-		arg55 := flag.Arg(1)
-		mbTrans56 := thrift.NewTMemoryBufferLen(len(arg55))
-		defer mbTrans56.Close()
-		_, err57 := mbTrans56.WriteString(arg55)
-		if err57 != nil {
+		arg69 := flag.Arg(1)
+		mbTrans70 := thrift.NewTMemoryBufferLen(len(arg69))
+		defer mbTrans70.Close()
+		_, err71 := mbTrans70.WriteString(arg69)
+		if err71 != nil {
 			Usage()
 			return
 		}
-		factory58 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt59 := factory58.GetProtocol(mbTrans56)
+		factory72 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt73 := factory72.GetProtocol(mbTrans70)
 		argvalue0 := services.NewCoordinate()
-		err60 := argvalue0.Read(jsProt59)
-		if err60 != nil {
+		err74 := argvalue0.Read(jsProt73)
+		if err74 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		tmp1, err61 := (strconv.Atoi(flag.Arg(2)))
-		if err61 != nil {
+		tmp1, err75 := (strconv.Atoi(flag.Arg(2)))
+		if err75 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
 		fmt.Print(client.GetNearBy(value0, value1))
+		fmt.Print("\n")
+		break
+	case "getAllAreasInCity":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetAllAreasInCity requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetAllAreasInCity(value0))
+		fmt.Print("\n")
+		break
+	case "getAreaById":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetAreaById requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetAreaById(value0))
 		fmt.Print("\n")
 		break
 	case "":

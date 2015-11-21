@@ -53,4 +53,8 @@ func (ch *CityHandler) GetNearBy(coord *services.Coordinate, limit int32) ([]*se
 	return ch.repo.GetNearBy(coord.Lat,coord.Lon, limit)
 }
 
+func (ch *CityHandler) GetAllCities() ([]*services.City,error) {
+	return ch.repo.GetAllCities()
+}
+
 

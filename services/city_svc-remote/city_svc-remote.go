@@ -22,6 +22,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  void createCity(string token, string title,  coords)")
 	fmt.Fprintln(os.Stderr, "   getNearBy(Coordinate coordinate, i32 limit)")
+	fmt.Fprintln(os.Stderr, "   getAllCities()")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -125,19 +126,19 @@ func main() {
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		arg72 := flag.Arg(3)
-		mbTrans73 := thrift.NewTMemoryBufferLen(len(arg72))
-		defer mbTrans73.Close()
-		_, err74 := mbTrans73.WriteString(arg72)
-		if err74 != nil {
+		arg91 := flag.Arg(3)
+		mbTrans92 := thrift.NewTMemoryBufferLen(len(arg91))
+		defer mbTrans92.Close()
+		_, err93 := mbTrans92.WriteString(arg91)
+		if err93 != nil {
 			Usage()
 			return
 		}
-		factory75 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt76 := factory75.GetProtocol(mbTrans73)
+		factory94 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt95 := factory94.GetProtocol(mbTrans92)
 		containerStruct2 := services.NewCitySvcCreateCityArgs()
-		err77 := containerStruct2.ReadField3(jsProt76)
-		if err77 != nil {
+		err96 := containerStruct2.ReadField3(jsProt95)
+		if err96 != nil {
 			Usage()
 			return
 		}
@@ -151,31 +152,39 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetNearBy requires 2 args")
 			flag.Usage()
 		}
-		arg78 := flag.Arg(1)
-		mbTrans79 := thrift.NewTMemoryBufferLen(len(arg78))
-		defer mbTrans79.Close()
-		_, err80 := mbTrans79.WriteString(arg78)
-		if err80 != nil {
+		arg97 := flag.Arg(1)
+		mbTrans98 := thrift.NewTMemoryBufferLen(len(arg97))
+		defer mbTrans98.Close()
+		_, err99 := mbTrans98.WriteString(arg97)
+		if err99 != nil {
 			Usage()
 			return
 		}
-		factory81 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt82 := factory81.GetProtocol(mbTrans79)
+		factory100 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt101 := factory100.GetProtocol(mbTrans98)
 		argvalue0 := services.NewCoordinate()
-		err83 := argvalue0.Read(jsProt82)
-		if err83 != nil {
+		err102 := argvalue0.Read(jsProt101)
+		if err102 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		tmp1, err84 := (strconv.Atoi(flag.Arg(2)))
-		if err84 != nil {
+		tmp1, err103 := (strconv.Atoi(flag.Arg(2)))
+		if err103 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
 		fmt.Print(client.GetNearBy(value0, value1))
+		fmt.Print("\n")
+		break
+	case "getAllCities":
+		if flag.NArg()-1 != 0 {
+			fmt.Fprintln(os.Stderr, "GetAllCities requires 0 args")
+			flag.Usage()
+		}
+		fmt.Print(client.GetAllCities())
 		fmt.Print("\n")
 		break
 	case "":

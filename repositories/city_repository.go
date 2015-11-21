@@ -59,20 +59,12 @@ func (rep *CityRepository) GetCityById(id string) *services.City {
 
 	}
 
-	return &services.City{
-		ID: id,
-		Coords: sCoords,
-		Center: &services.Coordinate{
-			Lat: 0,
-			Lon: 1,
-			},
-		Name: city.Name,
-	}
+	return rep.MongoCityToCity(&city)
 }
 
 func (rep *CityRepository) GetNearBy(longitude float64, latitude float64, limit int32) ([]*services.City, error) {
 	fmt.Println("entry - get city by id")
-	var cities []City
+	var cities []*City
 	err := rep.mongo.Collection.Find(
 		bson.M{"center":
 					bson.M{"$near":
@@ -83,19 +75,31 @@ func (rep *CityRepository) GetNearBy(longitude float64, latitude float64, limit 
 		panic(err)
 	}
 
-	//city service.city converter!
+	return rep.MongoCityListToCityList(cities), nil
+}
+
+func (rep *CityRepository) MongoCityListToCityList(cities []*City) ([]*services.City) {
 	cCities := make([]*services.City, len(cities))
 	for i, city := range cities {
-		cCities[i] = &services.City{
-			ID : city.ID,
-			Coords: city.Coords,
-			Center: &services.Coordinate{
-				Lat: city.Center[0],
-				Lon: city.Center[1],
-			},
-			Name : city.Name,
-		}
+		cCities[i] = rep.MongoCityToCity(city)
 	}
-	fmt.Println("exit - get city by id")
-	return cCities, nil
+	return cCities
+}
+
+func (rep *CityRepository) MongoCityToCity(city *City) (*services.City) {
+	return &services.City{
+		ID : city.ID,
+		Coords: city.Coords,
+		Center: &services.Coordinate{
+			Lat: city.Center[0],
+			Lon: city.Center[1],
+		},
+		Name : city.Name,
+	}
+}
+
+func (rep *CityRepository) GetAllCities() ([]*services.City, error) {
+	var cities []*City
+	rep.mongo.Collection.Find(bson.M{}).All(&cities)
+	return rep.MongoCityListToCityList(cities),nil
 }

@@ -16,14 +16,23 @@ var _ = bytes.Equal
 
 type AreaSvc interface {
 	// Parameters:
-	//  - Title
-	//  - Description
-	//  - Coords
-	CreateArea(title string, description string, coords []*Coordinate) (err error)
+	//  - Token
+	//  - Area
+	CreateArea(token string, area *Area) (err error)
+	// Parameters:
+	//  - Token
+	//  - Area
+	UpdateArea(token string, area *Area) (err error)
 	// Parameters:
 	//  - Coordinate
 	//  - Limit
 	GetNearBy(coordinate *Coordinate, limit int32) (r []*Area, err error)
+	// Parameters:
+	//  - Cityid
+	GetAllAreasInCity(cityid string) (r []*Area, err error)
+	// Parameters:
+	//  - ID
+	GetAreaById(id string) (r *Area, err error)
 }
 
 type AreaSvcClient struct {
@@ -53,17 +62,16 @@ func NewAreaSvcClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot
 }
 
 // Parameters:
-//  - Title
-//  - Description
-//  - Coords
-func (p *AreaSvcClient) CreateArea(title string, description string, coords []*Coordinate) (err error) {
-	if err = p.sendCreateArea(title, description, coords); err != nil {
+//  - Token
+//  - Area
+func (p *AreaSvcClient) CreateArea(token string, area *Area) (err error) {
+	if err = p.sendCreateArea(token, area); err != nil {
 		return
 	}
 	return p.recvCreateArea()
 }
 
-func (p *AreaSvcClient) sendCreateArea(title string, description string, coords []*Coordinate) (err error) {
+func (p *AreaSvcClient) sendCreateArea(token string, area *Area) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -74,9 +82,8 @@ func (p *AreaSvcClient) sendCreateArea(title string, description string, coords 
 		return
 	}
 	args := AreaSvcCreateAreaArgs{
-		Title:       title,
-		Description: description,
-		Coords:      coords,
+		Token: token,
+		Area:  area,
 	}
 	if err = args.Write(oprot); err != nil {
 		return
@@ -106,16 +113,16 @@ func (p *AreaSvcClient) recvCreateArea() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error40 error
-		error40, err = error39.Read(iprot)
+		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error42 error
+		error42, err = error41.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error40
+		err = error42
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -123,6 +130,84 @@ func (p *AreaSvcClient) recvCreateArea() (err error) {
 		return
 	}
 	result := AreaSvcCreateAreaResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Token
+//  - Area
+func (p *AreaSvcClient) UpdateArea(token string, area *Area) (err error) {
+	if err = p.sendUpdateArea(token, area); err != nil {
+		return
+	}
+	return p.recvUpdateArea()
+}
+
+func (p *AreaSvcClient) sendUpdateArea(token string, area *Area) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("updateArea", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := AreaSvcUpdateAreaArgs{
+		Token: token,
+		Area:  area,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *AreaSvcClient) recvUpdateArea() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "updateArea" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "updateArea failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "updateArea failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error44 error
+		error44, err = error43.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error44
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "updateArea failed: invalid message type")
+		return
+	}
+	result := AreaSvcUpdateAreaResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -184,16 +269,16 @@ func (p *AreaSvcClient) recvGetNearBy() (value []*Area, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error42 error
-		error42, err = error41.Read(iprot)
+		error45 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error46 error
+		error46, err = error45.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error42
+		err = error46
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -201,6 +286,160 @@ func (p *AreaSvcClient) recvGetNearBy() (value []*Area, err error) {
 		return
 	}
 	result := AreaSvcGetNearByResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Cityid
+func (p *AreaSvcClient) GetAllAreasInCity(cityid string) (r []*Area, err error) {
+	if err = p.sendGetAllAreasInCity(cityid); err != nil {
+		return
+	}
+	return p.recvGetAllAreasInCity()
+}
+
+func (p *AreaSvcClient) sendGetAllAreasInCity(cityid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getAllAreasInCity", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := AreaSvcGetAllAreasInCityArgs{
+		Cityid: cityid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *AreaSvcClient) recvGetAllAreasInCity() (value []*Area, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getAllAreasInCity" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getAllAreasInCity failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getAllAreasInCity failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error47 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error48 error
+		error48, err = error47.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error48
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getAllAreasInCity failed: invalid message type")
+		return
+	}
+	result := AreaSvcGetAllAreasInCityResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - ID
+func (p *AreaSvcClient) GetAreaById(id string) (r *Area, err error) {
+	if err = p.sendGetAreaById(id); err != nil {
+		return
+	}
+	return p.recvGetAreaById()
+}
+
+func (p *AreaSvcClient) sendGetAreaById(id string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getAreaById", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := AreaSvcGetAreaByIdArgs{
+		ID: id,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *AreaSvcClient) recvGetAreaById() (value *Area, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getAreaById" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getAreaById failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getAreaById failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error49 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error50 error
+		error50, err = error49.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error50
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getAreaById failed: invalid message type")
+		return
+	}
+	result := AreaSvcGetAreaByIdResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -231,10 +470,13 @@ func (p *AreaSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewAreaSvcProcessor(handler AreaSvc) *AreaSvcProcessor {
 
-	self43 := &AreaSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self43.processorMap["createArea"] = &areaSvcProcessorCreateArea{handler: handler}
-	self43.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
-	return self43
+	self51 := &AreaSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self51.processorMap["createArea"] = &areaSvcProcessorCreateArea{handler: handler}
+	self51.processorMap["updateArea"] = &areaSvcProcessorUpdateArea{handler: handler}
+	self51.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
+	self51.processorMap["getAllAreasInCity"] = &areaSvcProcessorGetAllAreasInCity{handler: handler}
+	self51.processorMap["getAreaById"] = &areaSvcProcessorGetAreaById{handler: handler}
+	return self51
 }
 
 func (p *AreaSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -247,12 +489,12 @@ func (p *AreaSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x44 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x52 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x44.Write(oprot)
+	x52.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x44
+	return false, x52
 
 }
 
@@ -275,7 +517,7 @@ func (p *areaSvcProcessorCreateArea) Process(seqId int32, iprot, oprot thrift.TP
 	iprot.ReadMessageEnd()
 	result := AreaSvcCreateAreaResult{}
 	var err2 error
-	if err2 = p.handler.CreateArea(args.Title, args.Description, args.Coords); err2 != nil {
+	if err2 = p.handler.CreateArea(args.Token, args.Area); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createArea: "+err2.Error())
 		oprot.WriteMessageBegin("createArea", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -284,6 +526,51 @@ func (p *areaSvcProcessorCreateArea) Process(seqId int32, iprot, oprot thrift.TP
 		return true, err2
 	}
 	if err2 = oprot.WriteMessageBegin("createArea", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type areaSvcProcessorUpdateArea struct {
+	handler AreaSvc
+}
+
+func (p *areaSvcProcessorUpdateArea) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := AreaSvcUpdateAreaArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("updateArea", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := AreaSvcUpdateAreaResult{}
+	var err2 error
+	if err2 = p.handler.UpdateArea(args.Token, args.Area); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing updateArea: "+err2.Error())
+		oprot.WriteMessageBegin("updateArea", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("updateArea", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -349,33 +636,132 @@ func (p *areaSvcProcessorGetNearBy) Process(seqId int32, iprot, oprot thrift.TPr
 	return true, err
 }
 
+type areaSvcProcessorGetAllAreasInCity struct {
+	handler AreaSvc
+}
+
+func (p *areaSvcProcessorGetAllAreasInCity) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := AreaSvcGetAllAreasInCityArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getAllAreasInCity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := AreaSvcGetAllAreasInCityResult{}
+	var retval []*Area
+	var err2 error
+	if retval, err2 = p.handler.GetAllAreasInCity(args.Cityid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getAllAreasInCity: "+err2.Error())
+		oprot.WriteMessageBegin("getAllAreasInCity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getAllAreasInCity", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type areaSvcProcessorGetAreaById struct {
+	handler AreaSvc
+}
+
+func (p *areaSvcProcessorGetAreaById) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := AreaSvcGetAreaByIdArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getAreaById", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := AreaSvcGetAreaByIdResult{}
+	var retval *Area
+	var err2 error
+	if retval, err2 = p.handler.GetAreaById(args.ID); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getAreaById: "+err2.Error())
+		oprot.WriteMessageBegin("getAreaById", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getAreaById", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
 // HELPER FUNCTIONS AND STRUCTURES
 
 // Attributes:
-//  - Title
-//  - Description
-//  - Coords
+//  - Token
+//  - Area
 type AreaSvcCreateAreaArgs struct {
-	Title       string        `thrift:"title,1" db:"title" json:"title"`
-	Description string        `thrift:"description,2" db:"description" json:"description"`
-	Coords      []*Coordinate `thrift:"coords,3" db:"coords" json:"coords"`
+	Token string `thrift:"token,1" db:"token" json:"token"`
+	Area  *Area  `thrift:"area,2" db:"area" json:"area"`
 }
 
 func NewAreaSvcCreateAreaArgs() *AreaSvcCreateAreaArgs {
 	return &AreaSvcCreateAreaArgs{}
 }
 
-func (p *AreaSvcCreateAreaArgs) GetTitle() string {
-	return p.Title
+func (p *AreaSvcCreateAreaArgs) GetToken() string {
+	return p.Token
 }
 
-func (p *AreaSvcCreateAreaArgs) GetDescription() string {
-	return p.Description
+var AreaSvcCreateAreaArgs_Area_DEFAULT *Area
+
+func (p *AreaSvcCreateAreaArgs) GetArea() *Area {
+	if !p.IsSetArea() {
+		return AreaSvcCreateAreaArgs_Area_DEFAULT
+	}
+	return p.Area
+}
+func (p *AreaSvcCreateAreaArgs) IsSetArea() bool {
+	return p.Area != nil
 }
 
-func (p *AreaSvcCreateAreaArgs) GetCoords() []*Coordinate {
-	return p.Coords
-}
 func (p *AreaSvcCreateAreaArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
@@ -398,10 +784,6 @@ func (p *AreaSvcCreateAreaArgs) Read(iprot thrift.TProtocol) error {
 			if err := p.ReadField2(iprot); err != nil {
 				return err
 			}
-		case 3:
-			if err := p.ReadField3(iprot); err != nil {
-				return err
-			}
 		default:
 			if err := iprot.Skip(fieldTypeId); err != nil {
 				return err
@@ -421,36 +803,15 @@ func (p *AreaSvcCreateAreaArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
-		p.Title = v
+		p.Token = v
 	}
 	return nil
 }
 
 func (p *AreaSvcCreateAreaArgs) ReadField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
-		return thrift.PrependError("error reading field 2: ", err)
-	} else {
-		p.Description = v
-	}
-	return nil
-}
-
-func (p *AreaSvcCreateAreaArgs) ReadField3(iprot thrift.TProtocol) error {
-	_, size, err := iprot.ReadListBegin()
-	if err != nil {
-		return thrift.PrependError("error reading list begin: ", err)
-	}
-	tSlice := make([]*Coordinate, 0, size)
-	p.Coords = tSlice
-	for i := 0; i < size; i++ {
-		_elem45 := &Coordinate{}
-		if err := _elem45.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem45), err)
-		}
-		p.Coords = append(p.Coords, _elem45)
-	}
-	if err := iprot.ReadListEnd(); err != nil {
-		return thrift.PrependError("error reading list end: ", err)
+	p.Area = &Area{}
+	if err := p.Area.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Area), err)
 	}
 	return nil
 }
@@ -465,9 +826,6 @@ func (p *AreaSvcCreateAreaArgs) Write(oprot thrift.TProtocol) error {
 	if err := p.writeField2(oprot); err != nil {
 		return err
 	}
-	if err := p.writeField3(oprot); err != nil {
-		return err
-	}
 	if err := oprot.WriteFieldStop(); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
 	}
@@ -478,48 +836,27 @@ func (p *AreaSvcCreateAreaArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *AreaSvcCreateAreaArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("title", thrift.STRING, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:title: ", p), err)
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Title)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.title (1) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:title: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
 	}
 	return err
 }
 
 func (p *AreaSvcCreateAreaArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("description", thrift.STRING, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:description: ", p), err)
+	if err := oprot.WriteFieldBegin("area", thrift.STRUCT, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:area: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Description)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.description (2) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:description: ", p), err)
-	}
-	return err
-}
-
-func (p *AreaSvcCreateAreaArgs) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("coords", thrift.LIST, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:coords: ", p), err)
-	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Coords)); err != nil {
-		return thrift.PrependError("error writing list begin: ", err)
-	}
-	for _, v := range p.Coords {
-		if err := v.Write(oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
-		}
-	}
-	if err := oprot.WriteListEnd(); err != nil {
-		return thrift.PrependError("error writing list end: ", err)
+	if err := p.Area.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Area), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:coords: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:area: ", p), err)
 	}
 	return err
 }
@@ -582,6 +919,193 @@ func (p *AreaSvcCreateAreaResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("AreaSvcCreateAreaResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Area
+type AreaSvcUpdateAreaArgs struct {
+	Token string `thrift:"token,1" db:"token" json:"token"`
+	Area  *Area  `thrift:"area,2" db:"area" json:"area"`
+}
+
+func NewAreaSvcUpdateAreaArgs() *AreaSvcUpdateAreaArgs {
+	return &AreaSvcUpdateAreaArgs{}
+}
+
+func (p *AreaSvcUpdateAreaArgs) GetToken() string {
+	return p.Token
+}
+
+var AreaSvcUpdateAreaArgs_Area_DEFAULT *Area
+
+func (p *AreaSvcUpdateAreaArgs) GetArea() *Area {
+	if !p.IsSetArea() {
+		return AreaSvcUpdateAreaArgs_Area_DEFAULT
+	}
+	return p.Area
+}
+func (p *AreaSvcUpdateAreaArgs) IsSetArea() bool {
+	return p.Area != nil
+}
+
+func (p *AreaSvcUpdateAreaArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcUpdateAreaArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *AreaSvcUpdateAreaArgs) ReadField2(iprot thrift.TProtocol) error {
+	p.Area = &Area{}
+	if err := p.Area.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Area), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcUpdateAreaArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("updateArea_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcUpdateAreaArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *AreaSvcUpdateAreaArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("area", thrift.STRUCT, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:area: ", p), err)
+	}
+	if err := p.Area.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Area), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:area: ", p), err)
+	}
+	return err
+}
+
+func (p *AreaSvcUpdateAreaArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AreaSvcUpdateAreaArgs(%+v)", *p)
+}
+
+type AreaSvcUpdateAreaResult struct {
+}
+
+func NewAreaSvcUpdateAreaResult() *AreaSvcUpdateAreaResult {
+	return &AreaSvcUpdateAreaResult{}
+}
+
+func (p *AreaSvcUpdateAreaResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcUpdateAreaResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("updateArea_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcUpdateAreaResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AreaSvcUpdateAreaResult(%+v)", *p)
 }
 
 // Attributes:
@@ -778,11 +1302,11 @@ func (p *AreaSvcGetNearByResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*Area, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem46 := &Area{}
-		if err := _elem46.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem46), err)
+		_elem53 := &Area{}
+		if err := _elem53.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem53), err)
 		}
-		p.Success = append(p.Success, _elem46)
+		p.Success = append(p.Success, _elem53)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -834,4 +1358,405 @@ func (p *AreaSvcGetNearByResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("AreaSvcGetNearByResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Cityid
+type AreaSvcGetAllAreasInCityArgs struct {
+	Cityid string `thrift:"cityid,1" db:"cityid" json:"cityid"`
+}
+
+func NewAreaSvcGetAllAreasInCityArgs() *AreaSvcGetAllAreasInCityArgs {
+	return &AreaSvcGetAllAreasInCityArgs{}
+}
+
+func (p *AreaSvcGetAllAreasInCityArgs) GetCityid() string {
+	return p.Cityid
+}
+func (p *AreaSvcGetAllAreasInCityArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAllAreasInCityArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Cityid = v
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAllAreasInCityArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getAllAreasInCity_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAllAreasInCityArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("cityid", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:cityid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Cityid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.cityid (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:cityid: ", p), err)
+	}
+	return err
+}
+
+func (p *AreaSvcGetAllAreasInCityArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AreaSvcGetAllAreasInCityArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type AreaSvcGetAllAreasInCityResult struct {
+	Success []*Area `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewAreaSvcGetAllAreasInCityResult() *AreaSvcGetAllAreasInCityResult {
+	return &AreaSvcGetAllAreasInCityResult{}
+}
+
+var AreaSvcGetAllAreasInCityResult_Success_DEFAULT []*Area
+
+func (p *AreaSvcGetAllAreasInCityResult) GetSuccess() []*Area {
+	return p.Success
+}
+func (p *AreaSvcGetAllAreasInCityResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *AreaSvcGetAllAreasInCityResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAllAreasInCityResult) ReadField0(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]*Area, 0, size)
+	p.Success = tSlice
+	for i := 0; i < size; i++ {
+		_elem54 := &Area{}
+		if err := _elem54.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem54), err)
+		}
+		p.Success = append(p.Success, _elem54)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAllAreasInCityResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getAllAreasInCity_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAllAreasInCityResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.LIST, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Success)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Success {
+			if err := v.Write(oprot); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *AreaSvcGetAllAreasInCityResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AreaSvcGetAllAreasInCityResult(%+v)", *p)
+}
+
+// Attributes:
+//  - ID
+type AreaSvcGetAreaByIdArgs struct {
+	ID string `thrift:"id,1" db:"id" json:"id"`
+}
+
+func NewAreaSvcGetAreaByIdArgs() *AreaSvcGetAreaByIdArgs {
+	return &AreaSvcGetAreaByIdArgs{}
+}
+
+func (p *AreaSvcGetAreaByIdArgs) GetID() string {
+	return p.ID
+}
+func (p *AreaSvcGetAreaByIdArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAreaByIdArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ID = v
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAreaByIdArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getAreaById_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAreaByIdArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:id: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.ID)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.id (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:id: ", p), err)
+	}
+	return err
+}
+
+func (p *AreaSvcGetAreaByIdArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AreaSvcGetAreaByIdArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type AreaSvcGetAreaByIdResult struct {
+	Success *Area `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewAreaSvcGetAreaByIdResult() *AreaSvcGetAreaByIdResult {
+	return &AreaSvcGetAreaByIdResult{}
+}
+
+var AreaSvcGetAreaByIdResult_Success_DEFAULT *Area
+
+func (p *AreaSvcGetAreaByIdResult) GetSuccess() *Area {
+	if !p.IsSetSuccess() {
+		return AreaSvcGetAreaByIdResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *AreaSvcGetAreaByIdResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *AreaSvcGetAreaByIdResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAreaByIdResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &Area{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAreaByIdResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getAreaById_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *AreaSvcGetAreaByIdResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *AreaSvcGetAreaByIdResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AreaSvcGetAreaByIdResult(%+v)", *p)
 }

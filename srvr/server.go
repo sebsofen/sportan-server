@@ -52,7 +52,7 @@ func NewAppServer(cfg Configuration) *AppServer {
 	//register area handler and stuff
 	areaCollection := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, "Areas")
 	areaRepo := repositories.NewAreaRepository(areaCollection)
-	processor.RegisterProcessor("Area", services.NewAreaSvcProcessor(handlers.NewAreaHandler(areaRepo, metricsLogging)))
+	processor.RegisterProcessor("Area", services.NewAreaSvcProcessor(handlers.NewAreaHandler(areaRepo, userRepo,metricsLogging)))
 
 
 
