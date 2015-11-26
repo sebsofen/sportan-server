@@ -9,12 +9,14 @@ import (
 )
 
 type ImageHandler struct {
-repo *repositories.ImageRepository
+	repo *repositories.ImageRepository
+	userR *repositories.UserRepository
 }
 
-func NewImageHandler(repo *repositories.ImageRepository) *ImageHandler {
+func NewImageHandler(repo *repositories.ImageRepository, userR *repositories.UserRepository) *ImageHandler {
 	return &ImageHandler{
 	repo:   repo,
+	userR:  userR,
 	}
 }
 
@@ -24,5 +26,16 @@ func (ch *ImageHandler) GetImageById(id string) (*services.Image, error) {
 	image := ch.repo.GetImageById(id)
 
 	return image,nil
+}
+
+func (ch *ImageHandler) CreateImage(token string, image *services.Image) (string,error) {
+	userid, _ := ch.userR.GetUserIdFromToken(token)
+	imgid := ""
+	if ch.userR.IsAdmin(userid) {
+		img, _ := ch.repo.SaveImage(image)
+		imgid = *img.ID
+
+	}
+	return imgid, nil
 }
 

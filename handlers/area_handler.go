@@ -90,8 +90,8 @@ func (ch *AreaHandler) GetNearBy(coord *services.Coordinate, limit int32) ([]*se
 
 	for i, area := range *areas {
 		sAreas[i] = &services.Area{
-			Title: &area.Title,
-			ID:    &area.ID,
+			Title: area.Title,
+			ID:    area.ID,
 		}
 
 	}

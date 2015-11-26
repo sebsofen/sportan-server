@@ -18,6 +18,10 @@ type ImageSvc interface {
 	// Parameters:
 	//  - ID
 	GetImageById(id string) (r *Image, err error)
+	// Parameters:
+	//  - Token
+	//  - Image
+	CreateImage(token string, image *Image) (r string, err error)
 }
 
 type ImageSvcClient struct {
@@ -123,6 +127,85 @@ func (p *ImageSvcClient) recvGetImageById() (value *Image, err error) {
 	return
 }
 
+// Parameters:
+//  - Token
+//  - Image
+func (p *ImageSvcClient) CreateImage(token string, image *Image) (r string, err error) {
+	if err = p.sendCreateImage(token, image); err != nil {
+		return
+	}
+	return p.recvCreateImage()
+}
+
+func (p *ImageSvcClient) sendCreateImage(token string, image *Image) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("createImage", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := ImageSvcCreateImageArgs{
+		Token: token,
+		Image: image,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *ImageSvcClient) recvCreateImage() (value string, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "createImage" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "createImage failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "createImage failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error21 error
+		error21, err = error20.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error21
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "createImage failed: invalid message type")
+		return
+	}
+	result := ImageSvcCreateImageResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
 type ImageSvcProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
 	handler      ImageSvc
@@ -143,9 +226,10 @@ func (p *ImageSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction 
 
 func NewImageSvcProcessor(handler ImageSvc) *ImageSvcProcessor {
 
-	self20 := &ImageSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self20.processorMap["getImageById"] = &imageSvcProcessorGetImageById{handler: handler}
-	return self20
+	self22 := &ImageSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self22.processorMap["getImageById"] = &imageSvcProcessorGetImageById{handler: handler}
+	self22.processorMap["createImage"] = &imageSvcProcessorCreateImage{handler: handler}
+	return self22
 }
 
 func (p *ImageSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -158,12 +242,12 @@ func (p *ImageSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x21 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x23 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x21.Write(oprot)
+	x23.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x21
+	return false, x23
 
 }
 
@@ -198,6 +282,54 @@ func (p *imageSvcProcessorGetImageById) Process(seqId int32, iprot, oprot thrift
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("getImageById", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type imageSvcProcessorCreateImage struct {
+	handler ImageSvc
+}
+
+func (p *imageSvcProcessorCreateImage) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := ImageSvcCreateImageArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("createImage", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := ImageSvcCreateImageResult{}
+	var retval string
+	var err2 error
+	if retval, err2 = p.handler.CreateImage(args.Token, args.Image); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createImage: "+err2.Error())
+		oprot.WriteMessageBegin("createImage", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = &retval
+	}
+	if err2 = oprot.WriteMessageBegin("createImage", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -407,4 +539,240 @@ func (p *ImageSvcGetImageByIdResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("ImageSvcGetImageByIdResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Image
+type ImageSvcCreateImageArgs struct {
+	Token string `thrift:"token,1" db:"token" json:"token"`
+	Image *Image `thrift:"image,2" db:"image" json:"image"`
+}
+
+func NewImageSvcCreateImageArgs() *ImageSvcCreateImageArgs {
+	return &ImageSvcCreateImageArgs{}
+}
+
+func (p *ImageSvcCreateImageArgs) GetToken() string {
+	return p.Token
+}
+
+var ImageSvcCreateImageArgs_Image_DEFAULT *Image
+
+func (p *ImageSvcCreateImageArgs) GetImage() *Image {
+	if !p.IsSetImage() {
+		return ImageSvcCreateImageArgs_Image_DEFAULT
+	}
+	return p.Image
+}
+func (p *ImageSvcCreateImageArgs) IsSetImage() bool {
+	return p.Image != nil
+}
+
+func (p *ImageSvcCreateImageArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageArgs) ReadField2(iprot thrift.TProtocol) error {
+	p.Image = &Image{}
+	if err := p.Image.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Image), err)
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("createImage_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *ImageSvcCreateImageArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("image", thrift.STRUCT, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:image: ", p), err)
+	}
+	if err := p.Image.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Image), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:image: ", p), err)
+	}
+	return err
+}
+
+func (p *ImageSvcCreateImageArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ImageSvcCreateImageArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type ImageSvcCreateImageResult struct {
+	Success *string `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewImageSvcCreateImageResult() *ImageSvcCreateImageResult {
+	return &ImageSvcCreateImageResult{}
+}
+
+var ImageSvcCreateImageResult_Success_DEFAULT string
+
+func (p *ImageSvcCreateImageResult) GetSuccess() string {
+	if !p.IsSetSuccess() {
+		return ImageSvcCreateImageResult_Success_DEFAULT
+	}
+	return *p.Success
+}
+func (p *ImageSvcCreateImageResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ImageSvcCreateImageResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageResult) ReadField0(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 0: ", err)
+	} else {
+		p.Success = &v
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("createImage_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *ImageSvcCreateImageResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRING, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Success)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.success (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *ImageSvcCreateImageResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ImageSvcCreateImageResult(%+v)", *p)
 }

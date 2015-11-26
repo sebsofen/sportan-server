@@ -853,10 +853,12 @@ func (p *Coordinate) String() string {
 //  - ID
 //  - Content
 //  - Creator
+//  - Bcontent
 type Image struct {
-	ID      *string `thrift:"id,1" db:"id" json:"id,omitempty"`
-	Content *string `thrift:"content,2" db:"content" json:"content,omitempty"`
-	Creator *string `thrift:"creator,3" db:"creator" json:"creator,omitempty"`
+	ID       *string `thrift:"id,1" db:"id" json:"id,omitempty"`
+	Content  *string `thrift:"content,2" db:"content" json:"content,omitempty"`
+	Creator  *string `thrift:"creator,3" db:"creator" json:"creator,omitempty"`
+	Bcontent []byte  `thrift:"bcontent,4" db:"bcontent" json:"bcontent,omitempty"`
 }
 
 func NewImage() *Image {
@@ -889,6 +891,12 @@ func (p *Image) GetCreator() string {
 	}
 	return *p.Creator
 }
+
+var Image_Bcontent_DEFAULT []byte
+
+func (p *Image) GetBcontent() []byte {
+	return p.Bcontent
+}
 func (p *Image) IsSetID() bool {
 	return p.ID != nil
 }
@@ -899,6 +907,10 @@ func (p *Image) IsSetContent() bool {
 
 func (p *Image) IsSetCreator() bool {
 	return p.Creator != nil
+}
+
+func (p *Image) IsSetBcontent() bool {
+	return p.Bcontent != nil
 }
 
 func (p *Image) Read(iprot thrift.TProtocol) error {
@@ -925,6 +937,10 @@ func (p *Image) Read(iprot thrift.TProtocol) error {
 			}
 		case 3:
 			if err := p.ReadField3(iprot); err != nil {
+				return err
+			}
+		case 4:
+			if err := p.ReadField4(iprot); err != nil {
 				return err
 			}
 		default:
@@ -969,6 +985,15 @@ func (p *Image) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *Image) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBinary(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.Bcontent = v
+	}
+	return nil
+}
+
 func (p *Image) Write(oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin("Image"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
@@ -980,6 +1005,9 @@ func (p *Image) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField4(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -1031,6 +1059,21 @@ func (p *Image) writeField3(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 3:creator: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Image) writeField4(oprot thrift.TProtocol) (err error) {
+	if p.IsSetBcontent() {
+		if err := oprot.WriteFieldBegin("bcontent", thrift.STRING, 4); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:bcontent: ", p), err)
+		}
+		if err := oprot.WriteBinary(p.Bcontent); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.bcontent (4) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:bcontent: ", p), err)
 		}
 	}
 	return err
@@ -1287,6 +1330,7 @@ func (p *Sport) String() string {
 //  - Title
 //  - Description
 //  - Cityid
+//  - Imageid
 //  - Sports
 //  - Center
 //  - Coords
@@ -1298,6 +1342,7 @@ type Area struct {
 	Coords      []*Coordinate `thrift:"coords,5" db:"coords" json:"coords,omitempty"`
 	Description *string       `thrift:"description,6" db:"description" json:"description,omitempty"`
 	Cityid      *string       `thrift:"cityid,7" db:"cityid" json:"cityid,omitempty"`
+	Imageid     *string       `thrift:"imageid,8" db:"imageid" json:"imageid,omitempty"`
 }
 
 func NewArea() *Area {
@@ -1340,6 +1385,15 @@ func (p *Area) GetCityid() string {
 	return *p.Cityid
 }
 
+var Area_Imageid_DEFAULT string
+
+func (p *Area) GetImageid() string {
+	if !p.IsSetImageid() {
+		return Area_Imageid_DEFAULT
+	}
+	return *p.Imageid
+}
+
 var Area_Sports_DEFAULT []string
 
 func (p *Area) GetSports() []string {
@@ -1374,6 +1428,10 @@ func (p *Area) IsSetDescription() bool {
 
 func (p *Area) IsSetCityid() bool {
 	return p.Cityid != nil
+}
+
+func (p *Area) IsSetImageid() bool {
+	return p.Imageid != nil
 }
 
 func (p *Area) IsSetSports() bool {
@@ -1416,6 +1474,10 @@ func (p *Area) Read(iprot thrift.TProtocol) error {
 			}
 		case 7:
 			if err := p.ReadField7(iprot); err != nil {
+				return err
+			}
+		case 8:
+			if err := p.ReadField8(iprot); err != nil {
 				return err
 			}
 		case 3:
@@ -1477,6 +1539,15 @@ func (p *Area) ReadField7(iprot thrift.TProtocol) error {
 		return thrift.PrependError("error reading field 7: ", err)
 	} else {
 		p.Cityid = &v
+	}
+	return nil
+}
+
+func (p *Area) ReadField8(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 8: ", err)
+	} else {
+		p.Imageid = &v
 	}
 	return nil
 }
@@ -1554,6 +1625,9 @@ func (p *Area) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField7(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField8(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -1681,6 +1755,21 @@ func (p *Area) writeField7(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 7:cityid: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Area) writeField8(oprot thrift.TProtocol) (err error) {
+	if p.IsSetImageid() {
+		if err := oprot.WriteFieldBegin("imageid", thrift.STRING, 8); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:imageid: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Imageid)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.imageid (8) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 8:imageid: ", p), err)
 		}
 	}
 	return err

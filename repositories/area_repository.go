@@ -11,13 +11,14 @@ import (
 )
 
 type Area struct {
-	Title       string                 `bson:"title,omitempty"`
-	Description string                 `bson:"description,omitempty"`
+	Title       *string                 `bson:"title,omitempty"`
+	Description *string                 `bson:"description,omitempty"`
 	Coords      []*services.Coordinate `bson:"coords,omitempty"`
 	Center      []float64              `bson:"center,omitempty"`
-	ID          string                 `bson:"areaid,omitempty"`
-	CityId      string             	   `bson:"cityid,omitempty"`
+	ID          *string                 `bson:"areaid,omitempty"`
+	CityId      *string             	   `bson:"cityid,omitempty"`
 	Sports 		[]string				`bson:"sports,omitempty"`
+	ImageId		*string					`bson:"iamgeid,omitempty"`
 }
 
 type AreaRepository struct {
@@ -38,25 +39,19 @@ func NewAreaRepository(mConfig *databases.MongoConfig) *AreaRepository {
 
 func (rep *AreaRepository) CreateArea(mArea *services.Area) {
 	rep.mongo.Collection.Insert(
-		&Area{
-			ID:          *mArea.ID,
-			Title:       *mArea.Title,
-			Description: *mArea.Description,
-			Center:      []float64{mArea.Center.Lon, mArea.Center.Lat},
-			Coords:      mArea.Coords,
-			CityId:	     *mArea.Cityid,
-		})
+		rep.AreaToMongoArea(mArea))
 }
 
 
 func (rep *AreaRepository) AreaToMongoArea( mArea *services.Area) *Area {
 	return &Area{
-		ID:          *mArea.ID,
-		Title:       *mArea.Title,
-		Description: *mArea.Description,
+		ID:          mArea.ID,
+		Title:       mArea.Title,
+		Description: mArea.Description,
 		Center:      []float64{mArea.Center.Lon, mArea.Center.Lat},
 		Coords:      mArea.Coords,
-		CityId:	     *mArea.Cityid,
+		CityId:	     mArea.Cityid,
+		ImageId: 	 mArea.Imageid,
 		Sports:		 mArea.Sports,
 	}
 }
@@ -81,16 +76,17 @@ func (rep *AreaRepository) MongoAreaListToAreaList(areas []*Area) ([]*services.A
 
 func (rep *AreaRepository) MongoAreaToArea(area *Area) (*services.Area) {
 	return &services.Area{
-		ID : &area.ID,
+		ID : area.ID,
 		Coords: area.Coords,
 		Center: &services.Coordinate{
-			Lat: area.Center[0],
-			Lon: area.Center[1],
+			Lat: area.Center[1],
+			Lon: area.Center[0],
 		},
-		Title : &area.Title,
-		Description: &area.Description,
+		Title : area.Title,
+		Description: area.Description,
 		Sports: area.Sports,
-		Cityid:	     &area.CityId,
+		Cityid:	     area.CityId,
+		Imageid: 	area.ImageId,
 	}
 }
 
@@ -104,7 +100,7 @@ func (rep *AreaRepository) GetAreaById(areaid string) *services.Area {
 
 func (rep *AreaRepository) UpdateArea(area *services.Area ) {
 	fmt.Println("update area" + *area.ID)
-	rep.mongo.Collection.Update(&Area{ID: *area.ID}, rep.AreaToMongoArea(area))
+	rep.mongo.Collection.Update(&Area{ID: area.ID}, rep.AreaToMongoArea(area))
 }
 
 

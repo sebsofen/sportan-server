@@ -108,16 +108,16 @@ func (p *UserSvcClient) recvCreateUser() (value *UserCredentials, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error23 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error24 error
-		error24, err = error23.Read(iprot)
+		error32 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error33 error
+		error33, err = error32.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error24
+		err = error33
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -191,16 +191,16 @@ func (p *UserSvcClient) recvSetProfile() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error25 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error26 error
-		error26, err = error25.Read(iprot)
+		error34 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error35 error
+		error35, err = error34.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error26
+		err = error35
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -269,16 +269,16 @@ func (p *UserSvcClient) recvRequestToken() (value *ThriftToken, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error27 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error28 error
-		error28, err = error27.Read(iprot)
+		error36 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error37 error
+		error37, err = error36.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error28
+		err = error37
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -316,11 +316,11 @@ func (p *UserSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewUserSvcProcessor(handler UserSvc) *UserSvcProcessor {
 
-	self29 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self29.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
-	self29.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
-	self29.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
-	return self29
+	self38 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self38.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
+	self38.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
+	self38.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
+	return self38
 }
 
 func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -333,12 +333,12 @@ func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x30 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x39 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x30.Write(oprot)
+	x39.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x30
+	return false, x39
 
 }
 

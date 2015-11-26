@@ -32,7 +32,7 @@ func NewAppServer(cfg Configuration) *AppServer {
 	//register Image handler and stuff
 	imageCollection := databases.NewMongoConfig(cfg.MongoHost,cfg.MongoDatabase, "Images")
 	imageRepo := repositories.NewImageRepository(imageCollection)
-	imageHandler := handlers.NewImageHandler(imageRepo)
+	imageHandler := handlers.NewImageHandler(imageRepo,userRepo)
 	processor.RegisterProcessor("Image", services.NewImageSvcProcessor(imageHandler))
 
 
@@ -52,7 +52,7 @@ func NewAppServer(cfg Configuration) *AppServer {
 	//register area handler and stuff
 	areaCollection := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, "Areas")
 	areaRepo := repositories.NewAreaRepository(areaCollection)
-	processor.RegisterProcessor("Area", services.NewAreaSvcProcessor(handlers.NewAreaHandler(areaRepo, userRepo,metricsLogging)))
+	processor.RegisterProcessor("Area", services.NewAreaSvcProcessor(handlers.NewAreaHandler(areaRepo,  userRepo,metricsLogging)))
 
 
 
