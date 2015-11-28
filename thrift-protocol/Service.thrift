@@ -25,6 +25,12 @@ struct UserProfile {
 
 }
 
+struct User {
+    1: optional string identifier,
+    3: optional string role,
+    4: optional UserProfile profile,
+}
+
 struct ThriftToken {
     1: required string token,
     2: required i64 validityDuration,
@@ -53,12 +59,13 @@ struct Sport {
 struct Area {
   1: optional string id,
   2: optional string title,
-  6: optional string description,
-  7: optional string cityid,
-  8: optional string imageid,
   3: optional list<string> sports,
   4: optional Coordinate center,
   5: optional list<Coordinate> coords,
+  6: optional string description,
+  7: optional string cityid,
+  8: optional string imageid,
+
 }
 
 struct City {
@@ -81,8 +88,10 @@ service SportSvc {
 service ImageSvc {
   //Image createImage(1: string token, 2: Image image);
   Image getImageById(1: string id);
+  Image getThumbnailByImageId(1: string id);
   string createImage(1: string token, 2: Image image);
 }
+
 
 
 /**
@@ -96,8 +105,8 @@ service UserSvc {
 
     ThriftToken requestToken(1: string username, 2: string plain_pw);
 
-//    string getUserIdFromToken(1: string token),
-    //return token, if user / pw combi is valid
+
+    void setAdmin(1: string token, 2: string userid);
 
 }
 
@@ -106,9 +115,16 @@ service AreaSvc {
     void createArea(1: string token, 2:Area area);
     void updateArea(1: string token, 2:Area area);
 
+    void deleteArea(1:string token, 2: Area area);
+
     list<Area> getNearBy(1: Coordinate coordinate, 2: i32 limit);
     list<Area> getAllAreasInCity(1: string cityid);
     Area getAreaById(1:string id);
+
+    //functions for easy retrieval of new areas!
+    //i32 countAreasInCity(1: string cityid);
+    //list<Area> getBatchAreasInCity(1: string cityid, i32 offset, i32 limit);
+
 }
 
 service CitySvc {

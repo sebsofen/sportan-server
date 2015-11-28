@@ -77,6 +77,17 @@ func (ch *AreaHandler) UpdateArea(token string, area *services.Area) error {
 	return nil
 }
 
+func (ch *AreaHandler) DeleteArea(token string, area *services.Area) error {
+	userid, _ := ch.userR.GetUserIdFromToken(token)
+
+	if ch.userR.IsAdmin(userid) {
+		ch.repo.UpdateArea(area)
+
+	}
+
+	return nil
+}
+
 
 
 func (ch *AreaHandler) GetNearBy(coord *services.Coordinate, limit int32) ([]*services.Area, error) {

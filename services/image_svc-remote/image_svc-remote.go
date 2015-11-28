@@ -21,6 +21,7 @@ func Usage() {
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  Image getImageById(string id)")
+	fmt.Fprintln(os.Stderr, "  Image getThumbnailByImageId(string id)")
 	fmt.Fprintln(os.Stderr, "  string createImage(string token, Image image)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
@@ -126,6 +127,16 @@ func main() {
 		fmt.Print(client.GetImageById(value0))
 		fmt.Print("\n")
 		break
+	case "getThumbnailByImageId":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetThumbnailByImageId requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetThumbnailByImageId(value0))
+		fmt.Print("\n")
+		break
 	case "createImage":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "CreateImage requires 2 args")
@@ -133,19 +144,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg26 := flag.Arg(2)
-		mbTrans27 := thrift.NewTMemoryBufferLen(len(arg26))
-		defer mbTrans27.Close()
-		_, err28 := mbTrans27.WriteString(arg26)
-		if err28 != nil {
+		arg29 := flag.Arg(2)
+		mbTrans30 := thrift.NewTMemoryBufferLen(len(arg29))
+		defer mbTrans30.Close()
+		_, err31 := mbTrans30.WriteString(arg29)
+		if err31 != nil {
 			Usage()
 			return
 		}
-		factory29 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt30 := factory29.GetProtocol(mbTrans27)
+		factory32 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt33 := factory32.GetProtocol(mbTrans30)
 		argvalue1 := services.NewImage()
-		err31 := argvalue1.Read(jsProt30)
-		if err31 != nil {
+		err34 := argvalue1.Read(jsProt33)
+		if err34 != nil {
 			Usage()
 			return
 		}
