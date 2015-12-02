@@ -580,7 +580,7 @@ func (p *UserProfile) String() string {
 //  - Role
 //  - Profile
 type User struct {
-	Identifier *string `thrift:"identifier,1" db:"identifier" json:"identifier,omitempty"`
+	Identifier *string `thrift:"identifier,1" bson:"username,omitempty"`
 	// unused field # 2
 	Role    *string      `thrift:"role,3" db:"role" json:"role,omitempty"`
 	Profile *UserProfile `thrift:"profile,4" db:"profile" json:"profile,omitempty"`

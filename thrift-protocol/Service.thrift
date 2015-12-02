@@ -26,7 +26,7 @@ struct UserProfile {
 }
 
 struct User {
-    1: optional string identifier,
+    1: optional string identifier (go.tag = "bson:\"username,omitempty\""),
     3: optional string role,
     4: optional UserProfile profile,
 }

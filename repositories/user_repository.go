@@ -8,9 +8,8 @@ import (
 	"fmt"
 	"sportan/databases"
 	"time"
-
 	"gopkg.in/mgo.v2/bson"
-"sportan/services"
+	"sportan/services"
 )
 
 type UserRepository struct {
@@ -27,7 +26,6 @@ const (
 // user as represented in database. be sure to update user conversion when needed
 type User struct {
 	Username     *string   `bson:"username,omitempty"`
-
 	Password     *string   `bson:"password,omitempty"`
 	Token        *Token   `bson:"token,omitempty"`
 	Friends      []string `bson:"friends,omitempty"`
