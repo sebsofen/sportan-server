@@ -20,20 +20,22 @@ struct UserCredentials {
 
 struct UserProfile {
     1: optional string identifier,
-    2: optional string username,
+    2: optional string username (go.tag = "bson:\"username,omitempty\""),
     3: optional binary profilepicture,
 
 }
 
 struct User {
     1: optional string identifier (go.tag = "bson:\"username,omitempty\""),
-    3: optional string role,
-    4: optional UserProfile profile,
+    2: optional string password (go.tag = "bson:\"password,omitempty\""),
+    3: optional string role (go.tag = "bson:\"role,omitempty\""),
+    4: optional UserProfile profile (go.tag = "bson:\"profile,omitempty\""),
+
 }
 
 struct ThriftToken {
-    1: required string token,
-    2: required i64 validityDuration,
+    1: required string token (go.tag = "bson:\"token,omitempty\""),
+    2: required i64 validityDuration(go.tag = "bson:\"validity,omitempty\""),
 }
 
 struct Coordinate {

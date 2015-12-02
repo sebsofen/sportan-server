@@ -24,6 +24,7 @@ const (
 )
 
 // user as represented in database. be sure to update user conversion when needed
+/*
 type User struct {
 	Username     *string   `bson:"username,omitempty"`
 	Password     *string   `bson:"password,omitempty"`
@@ -57,6 +58,7 @@ func (u *User) IsSuperAdmin() bool {
 
 
 
+
 type Token struct {
 	Token    string `bson:"token,omitempty"`
 	Validity int64  `bson:"validity,omitempty"`
@@ -66,6 +68,7 @@ type Profile struct {
 	Username    string `bson:"username,omitempty"`
 
 }
+*/
 
 //create a new user Repository
 func NewUserRepository(mConfig *databases.MongoConfig) *UserRepository {
