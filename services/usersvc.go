@@ -22,12 +22,15 @@ type UserSvc interface { //Userrelated stuff (creation etc)
 	CreateUser(password string) (r *UserCredentials, err error)
 	// Parameters:
 	//  - Token
+	GetMe(token string) (r *User, err error)
+	// Parameters:
+	//  - Token
 	//  - Profile
-	SetProfile(token string, profile *UserProfile) (err error)
+	SetProfile(token string, profile *Profile) (err error)
 	// Parameters:
 	//  - Username
 	//  - PlainPw
-	RequestToken(username string, plain_pw string) (r *ThriftToken, err error)
+	RequestToken(username string, plain_pw string) (r *Token, err error)
 	// Parameters:
 	//  - Token
 	//  - Userid
@@ -145,15 +148,92 @@ func (p *UserSvcClient) recvCreateUser() (value *UserCredentials, err error) {
 
 // Parameters:
 //  - Token
+func (p *UserSvcClient) GetMe(token string) (r *User, err error) {
+	if err = p.sendGetMe(token); err != nil {
+		return
+	}
+	return p.recvGetMe()
+}
+
+func (p *UserSvcClient) sendGetMe(token string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getMe", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcGetMeArgs{
+		Token: token,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvGetMe() (value *User, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getMe" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getMe failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getMe failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error38 error
+		error38, err = error37.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error38
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getMe failed: invalid message type")
+		return
+	}
+	result := UserSvcGetMeResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Token
 //  - Profile
-func (p *UserSvcClient) SetProfile(token string, profile *UserProfile) (err error) {
+func (p *UserSvcClient) SetProfile(token string, profile *Profile) (err error) {
 	if err = p.sendSetProfile(token, profile); err != nil {
 		return
 	}
 	return p.recvSetProfile()
 }
 
-func (p *UserSvcClient) sendSetProfile(token string, profile *UserProfile) (err error) {
+func (p *UserSvcClient) sendSetProfile(token string, profile *Profile) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -195,16 +275,16 @@ func (p *UserSvcClient) recvSetProfile() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error38 error
-		error38, err = error37.Read(iprot)
+		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error40 error
+		error40, err = error39.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error38
+		err = error40
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -224,7 +304,7 @@ func (p *UserSvcClient) recvSetProfile() (err error) {
 // Parameters:
 //  - Username
 //  - PlainPw
-func (p *UserSvcClient) RequestToken(username string, plain_pw string) (r *ThriftToken, err error) {
+func (p *UserSvcClient) RequestToken(username string, plain_pw string) (r *Token, err error) {
 	if err = p.sendRequestToken(username, plain_pw); err != nil {
 		return
 	}
@@ -254,7 +334,7 @@ func (p *UserSvcClient) sendRequestToken(username string, plain_pw string) (err 
 	return oprot.Flush()
 }
 
-func (p *UserSvcClient) recvRequestToken() (value *ThriftToken, err error) {
+func (p *UserSvcClient) recvRequestToken() (value *Token, err error) {
 	iprot := p.InputProtocol
 	if iprot == nil {
 		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -273,16 +353,16 @@ func (p *UserSvcClient) recvRequestToken() (value *ThriftToken, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error40 error
-		error40, err = error39.Read(iprot)
+		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error42 error
+		error42, err = error41.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error40
+		err = error42
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -352,16 +432,16 @@ func (p *UserSvcClient) recvSetAdmin() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error42 error
-		error42, err = error41.Read(iprot)
+		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error44 error
+		error44, err = error43.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error42
+		err = error44
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -398,12 +478,13 @@ func (p *UserSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewUserSvcProcessor(handler UserSvc) *UserSvcProcessor {
 
-	self43 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self43.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
-	self43.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
-	self43.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
-	self43.processorMap["setAdmin"] = &userSvcProcessorSetAdmin{handler: handler}
-	return self43
+	self45 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self45.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
+	self45.processorMap["getMe"] = &userSvcProcessorGetMe{handler: handler}
+	self45.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
+	self45.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
+	self45.processorMap["setAdmin"] = &userSvcProcessorSetAdmin{handler: handler}
+	return self45
 }
 
 func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -416,12 +497,12 @@ func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x44 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x46 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x44.Write(oprot)
+	x46.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x44
+	return false, x46
 
 }
 
@@ -461,6 +542,54 @@ func (p *userSvcProcessorCreateUser) Process(seqId int32, iprot, oprot thrift.TP
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("createUser", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorGetMe struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorGetMe) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcGetMeArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getMe", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcGetMeResult{}
+	var retval *User
+	var err2 error
+	if retval, err2 = p.handler.GetMe(args.Token); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getMe: "+err2.Error())
+		oprot.WriteMessageBegin("getMe", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getMe", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -541,7 +670,7 @@ func (p *userSvcProcessorRequestToken) Process(seqId int32, iprot, oprot thrift.
 
 	iprot.ReadMessageEnd()
 	result := UserSvcRequestTokenResult{}
-	var retval *ThriftToken
+	var retval *Token
 	var err2 error
 	if retval, err2 = p.handler.RequestToken(args.Username, args.PlainPw); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing requestToken: "+err2.Error())
@@ -857,10 +986,202 @@ func (p *UserSvcCreateUserResult) String() string {
 
 // Attributes:
 //  - Token
+type UserSvcGetMeArgs struct {
+	Token string `thrift:"token,1" db:"token" json:"token"`
+}
+
+func NewUserSvcGetMeArgs() *UserSvcGetMeArgs {
+	return &UserSvcGetMeArgs{}
+}
+
+func (p *UserSvcGetMeArgs) GetToken() string {
+	return p.Token
+}
+func (p *UserSvcGetMeArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetMeArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcGetMeArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getMe_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetMeArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcGetMeArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetMeArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type UserSvcGetMeResult struct {
+	Success *User `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewUserSvcGetMeResult() *UserSvcGetMeResult {
+	return &UserSvcGetMeResult{}
+}
+
+var UserSvcGetMeResult_Success_DEFAULT *User
+
+func (p *UserSvcGetMeResult) GetSuccess() *User {
+	if !p.IsSetSuccess() {
+		return UserSvcGetMeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *UserSvcGetMeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *UserSvcGetMeResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetMeResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &User{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetMeResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getMe_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetMeResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *UserSvcGetMeResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetMeResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
 //  - Profile
 type UserSvcSetProfileArgs struct {
-	Token   string       `thrift:"token,1" db:"token" json:"token"`
-	Profile *UserProfile `thrift:"profile,2" db:"profile" json:"profile"`
+	Token   string   `thrift:"token,1" db:"token" json:"token"`
+	Profile *Profile `thrift:"profile,2" db:"profile" json:"profile"`
 }
 
 func NewUserSvcSetProfileArgs() *UserSvcSetProfileArgs {
@@ -871,9 +1192,9 @@ func (p *UserSvcSetProfileArgs) GetToken() string {
 	return p.Token
 }
 
-var UserSvcSetProfileArgs_Profile_DEFAULT *UserProfile
+var UserSvcSetProfileArgs_Profile_DEFAULT *Profile
 
-func (p *UserSvcSetProfileArgs) GetProfile() *UserProfile {
+func (p *UserSvcSetProfileArgs) GetProfile() *Profile {
 	if !p.IsSetProfile() {
 		return UserSvcSetProfileArgs_Profile_DEFAULT
 	}
@@ -930,7 +1251,7 @@ func (p *UserSvcSetProfileArgs) ReadField1(iprot thrift.TProtocol) error {
 }
 
 func (p *UserSvcSetProfileArgs) ReadField2(iprot thrift.TProtocol) error {
-	p.Profile = &UserProfile{}
+	p.Profile = &Profile{}
 	if err := p.Profile.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Profile), err)
 	}
@@ -1171,16 +1492,16 @@ func (p *UserSvcRequestTokenArgs) String() string {
 // Attributes:
 //  - Success
 type UserSvcRequestTokenResult struct {
-	Success *ThriftToken `thrift:"success,0" db:"success" json:"success,omitempty"`
+	Success *Token `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewUserSvcRequestTokenResult() *UserSvcRequestTokenResult {
 	return &UserSvcRequestTokenResult{}
 }
 
-var UserSvcRequestTokenResult_Success_DEFAULT *ThriftToken
+var UserSvcRequestTokenResult_Success_DEFAULT *Token
 
-func (p *UserSvcRequestTokenResult) GetSuccess() *ThriftToken {
+func (p *UserSvcRequestTokenResult) GetSuccess() *Token {
 	if !p.IsSetSuccess() {
 		return UserSvcRequestTokenResult_Success_DEFAULT
 	}
@@ -1224,7 +1545,7 @@ func (p *UserSvcRequestTokenResult) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *UserSvcRequestTokenResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = &ThriftToken{}
+	p.Success = &Token{}
 	if err := p.Success.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
 	}

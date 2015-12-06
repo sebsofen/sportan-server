@@ -18,10 +18,6 @@ type UserRepository struct {
 
 
 
-const (
-	ROLE_ADMIN ="admin"
-	ROLE_SUPERADMIN = "superadmin"
-)
 
 // user as represented in database. be sure to update user conversion when needed
 /*
@@ -80,62 +76,56 @@ func NewUserRepository(mConfig *databases.MongoConfig) *UserRepository {
 //Add user to database
 func (rep *UserRepository) AddUser(uname string, userpassword string) error {
 	hashpw := rep.HashPw(userpassword)
-	err := rep.mongo.Collection.Insert(&User{Username: &uname, Password: &hashpw})
+	err := rep.mongo.Collection.Insert(&services.User{Identifier: &uname, Password: &hashpw})
 	return err
 }
 
 //generate token and set to current token in database
-func (rep *UserRepository) CreateTokenForUser(uname string, hashedpw string) *Token {
+func (rep *UserRepository) CreateTokenForUser(uname string, hashedpw string) (*services.Token, error) {
 	ts := time.Now().UnixNano()/1e6 + 24*3600*1000
 	token := randToken()
 	//update token in database for username
-	tokenStruct := &Token{
+	tokenStruct := &services.Token{
 		Token:    token,
 		Validity: ts,
 	}
 	fmt.Println(uname)
 	type M map[string]interface{}
 
-	err := rep.mongo.Collection.Update(User{Username: &uname, Password: &hashedpw}, M{"$set": User{Token: tokenStruct}})
-	if err != nil {
-		//this will only happen, if user does not exist or user/pw combi is wrong
-		return &Token{
-			Token:    "",
-			Validity: 0,
-		}
-	}
-	return tokenStruct
+	err := rep.mongo.Collection.Update(services.User{Identifier: &uname, Password: &hashedpw}, M{"$set": services.User{Token: tokenStruct}})
+
+	return tokenStruct, err
 }
 
 
 
-func (rep *UserRepository) UpdateProfile(token string, profile *services.UserProfile) error {
+func (rep *UserRepository) UpdateProfile(token string, profile *services.Profile) error {
 	err := rep.mongo.Collection.Update(bson.M{"token.token": token},
-	 bson.M{"$set" : User{Profile: &Profile {
-		Username : *profile.Username,
+	 bson.M{"$set" : services.User{Profile: &services.Profile {
+		Identifier : profile.Username,
 	}}})
 
 	return err
 }
 
 func (rep *UserRepository) GetUserIdFromToken(token string) (string, error) {
-	user := User{}
+	user := services.User{}
 	err := rep.mongo.Collection.Find(bson.M{"token.token": token}).One(&user)
 	userid := ""
 	if(err != nil){
 		fmt.Println("HEERE KOMMT EIN ERROR")
 		panic(err)
 	}
-	userid = *user.Username
+	userid = *user.Identifier
 	return userid, err
 }
 
 //TODO : TO BE IMPLEMENTED
 func (rep *UserRepository) GetUserById(userid string) (*services.User,error) {
-	user := User{}
-	err := rep.mongo.Collection.Find(bson.M{"username": userid}).One(&user)
+	user := &services.User{}
+	err := rep.mongo.Collection.Find(bson.M{"username": userid}).One(user)
 	if err == nil {
-		return user.ToUser(), nil
+		return user, nil
 	}else {
 		return nil,err
 	}
@@ -168,22 +158,29 @@ func (rep *UserRepository) UserToMongoUser(user *services.User) (*User) {
 
 //TODO TO BE IMPLEMENTED
 func (rep *UserRepository) IsAdmin(userid string) bool {
-	var user *User
+	var user *services.User
 	rep.mongo.Collection.Find(bson.M{"username": userid}).One(&user)
 
-	if user.Role != nil && *user.Role == ROLE_ADMIN || *user.Role == ROLE_SUPERADMIN {
+	if user.Role != nil && *user.Role == services.ROLE_ADMIN || *user.Role == services.ROLE_SUPERADMIN {
 		return true
 	}
 	return false
 }
 
+func (rep *UserRepository) GetFullUserInfo(userid string) (*services.User, error) {
+	//TODO TO BE IMPLEMENTED
+	var user *services.User
 
+	err := rep.mongo.Collection.Find(bson.M{"username": userid}).One(&user)
+	return user,err
+
+}
 
 func (rep *UserRepository) IsSuper(userid string) bool {
-	var user *User
+	var user *services.User
 	rep.mongo.Collection.Find(bson.M{"username": userid}).One(&user)
 
-	if user.Role != nil && *user.Role == ROLE_SUPERADMIN{
+	if user.Role != nil && *user.Role == services.ROLE_SUPERADMIN{
 		return true
 	}
 	return false

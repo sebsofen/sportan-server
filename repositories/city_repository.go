@@ -48,13 +48,16 @@ func (rep *CityRepository) GetCityById(id string) *services.City {
 		panic(err)
 	}
 
-	sCoords := make([]*services.Coordinate, len(city.Coords))
+	sCoords := make([]*services.Coordinate, len(city.Coords) / 20)
+
 
 	for i, coord := range city.Coords {
 		fmt.Println(i)
-		sCoords[i] = &services.Coordinate{
-			Lat: coord.Lat,
-			Lon: coord.Lon,
+		if i % 20 == 0{
+			sCoords[i / 20] = &services.Coordinate{
+				Lat: coord.Lat,
+				Lon: coord.Lon,
+			}
 		}
 
 	}

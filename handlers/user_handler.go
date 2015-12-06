@@ -2,12 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/nu7hatch/gouuid"
 	"sportan/databases"
 	"sportan/repositories"
 	"sportan/services"
-
-	"github.com/nu7hatch/gouuid"
-	"time"
 )
 
 type UserHandler struct {
@@ -38,8 +36,15 @@ func (ch *UserHandler) CreateUser(password string) (*services.UserCredentials, e
 	}, nil
 }
 
+func (ch *UserHandler) GetMe(token string) (*services.User,error) {
+	id, err := ch.GetUserIdFromToken(token)
+	if err != nil {
+		return nil, err
+	}
+	return ch.repo.GetFullUserInfo(id)
+}
 
-func (ch *UserHandler) SetProfile(token string, profile *services.UserProfile)(error) {
+func (ch *UserHandler) SetProfile(token string, profile *services.Profile)(error) {
 	fmt.Println("Setting new Profile")
 	_, err := ch.GetUserIdFromToken(token)
 
@@ -66,14 +71,11 @@ func (ch *UserHandler) SetAdmin(token string, userid string) (error) {
 }
 
 
-func (ch *UserHandler) RequestToken(username string, password string) (*services.ThriftToken,error){
+func (ch *UserHandler) RequestToken(username string, password string) (*services.Token,error){
 	//create userid
 
-	token := ch.repo.CreateTokenForUser(username,ch.repo.HashPw(password))
-	return &services.ThriftToken{
-		Token : token.Token,
-		ValidityDuration : token.Validity - time.Now().UnixNano() / int64(time.Millisecond),
-	}, nil
+	token, err := ch.repo.CreateTokenForUser(username,ch.repo.HashPw(password))
+	return token, err
 }
 
 

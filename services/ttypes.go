@@ -388,52 +388,67 @@ func (p *UserCredentials) String() string {
 //  - Identifier
 //  - Username
 //  - Profilepicture
-type UserProfile struct {
-	Identifier     *string `thrift:"identifier,1" db:"identifier" json:"identifier,omitempty"`
-	Username       *string `thrift:"username,2" db:"username" json:"username,omitempty"`
-	Profilepicture []byte  `thrift:"profilepicture,3" db:"profilepicture" json:"profilepicture,omitempty"`
+//  - CityID
+type Profile struct {
+	Identifier     *string `thrift:"identifier,1" bson:"identifier,omitempty"`
+	Username       *string `thrift:"username,2" bson:"username,omitempty"`
+	Profilepicture []byte  `thrift:"profilepicture,3" bson:"image_id,omitempty"`
+	CityID         *string `thrift:"city_id,4" bson:"city_id,omitempty"`
 }
 
-func NewUserProfile() *UserProfile {
-	return &UserProfile{}
+func NewProfile() *Profile {
+	return &Profile{}
 }
 
-var UserProfile_Identifier_DEFAULT string
+var Profile_Identifier_DEFAULT string
 
-func (p *UserProfile) GetIdentifier() string {
+func (p *Profile) GetIdentifier() string {
 	if !p.IsSetIdentifier() {
-		return UserProfile_Identifier_DEFAULT
+		return Profile_Identifier_DEFAULT
 	}
 	return *p.Identifier
 }
 
-var UserProfile_Username_DEFAULT string
+var Profile_Username_DEFAULT string
 
-func (p *UserProfile) GetUsername() string {
+func (p *Profile) GetUsername() string {
 	if !p.IsSetUsername() {
-		return UserProfile_Username_DEFAULT
+		return Profile_Username_DEFAULT
 	}
 	return *p.Username
 }
 
-var UserProfile_Profilepicture_DEFAULT []byte
+var Profile_Profilepicture_DEFAULT []byte
 
-func (p *UserProfile) GetProfilepicture() []byte {
+func (p *Profile) GetProfilepicture() []byte {
 	return p.Profilepicture
 }
-func (p *UserProfile) IsSetIdentifier() bool {
+
+var Profile_CityID_DEFAULT string
+
+func (p *Profile) GetCityID() string {
+	if !p.IsSetCityID() {
+		return Profile_CityID_DEFAULT
+	}
+	return *p.CityID
+}
+func (p *Profile) IsSetIdentifier() bool {
 	return p.Identifier != nil
 }
 
-func (p *UserProfile) IsSetUsername() bool {
+func (p *Profile) IsSetUsername() bool {
 	return p.Username != nil
 }
 
-func (p *UserProfile) IsSetProfilepicture() bool {
+func (p *Profile) IsSetProfilepicture() bool {
 	return p.Profilepicture != nil
 }
 
-func (p *UserProfile) Read(iprot thrift.TProtocol) error {
+func (p *Profile) IsSetCityID() bool {
+	return p.CityID != nil
+}
+
+func (p *Profile) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -459,6 +474,10 @@ func (p *UserProfile) Read(iprot thrift.TProtocol) error {
 			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
+		case 4:
+			if err := p.ReadField4(iprot); err != nil {
+				return err
+			}
 		default:
 			if err := iprot.Skip(fieldTypeId); err != nil {
 				return err
@@ -474,7 +493,7 @@ func (p *UserProfile) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) ReadField1(iprot thrift.TProtocol) error {
+func (p *Profile) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -483,7 +502,7 @@ func (p *UserProfile) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) ReadField2(iprot thrift.TProtocol) error {
+func (p *Profile) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -492,7 +511,7 @@ func (p *UserProfile) ReadField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) ReadField3(iprot thrift.TProtocol) error {
+func (p *Profile) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadBinary(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
@@ -501,8 +520,17 @@ func (p *UserProfile) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("UserProfile"); err != nil {
+func (p *Profile) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.CityID = &v
+	}
+	return nil
+}
+
+func (p *Profile) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Profile"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if err := p.writeField1(oprot); err != nil {
@@ -514,6 +542,9 @@ func (p *UserProfile) Write(oprot thrift.TProtocol) error {
 	if err := p.writeField3(oprot); err != nil {
 		return err
 	}
+	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
 	if err := oprot.WriteFieldStop(); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
 	}
@@ -523,7 +554,7 @@ func (p *UserProfile) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *UserProfile) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *Profile) writeField1(oprot thrift.TProtocol) (err error) {
 	if p.IsSetIdentifier() {
 		if err := oprot.WriteFieldBegin("identifier", thrift.STRING, 1); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:identifier: ", p), err)
@@ -538,7 +569,7 @@ func (p *UserProfile) writeField1(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
-func (p *UserProfile) writeField2(oprot thrift.TProtocol) (err error) {
+func (p *Profile) writeField2(oprot thrift.TProtocol) (err error) {
 	if p.IsSetUsername() {
 		if err := oprot.WriteFieldBegin("username", thrift.STRING, 2); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:username: ", p), err)
@@ -553,7 +584,7 @@ func (p *UserProfile) writeField2(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
-func (p *UserProfile) writeField3(oprot thrift.TProtocol) (err error) {
+func (p *Profile) writeField3(oprot thrift.TProtocol) (err error) {
 	if p.IsSetProfilepicture() {
 		if err := oprot.WriteFieldBegin("profilepicture", thrift.STRING, 3); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:profilepicture: ", p), err)
@@ -568,22 +599,177 @@ func (p *UserProfile) writeField3(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
-func (p *UserProfile) String() string {
+func (p *Profile) writeField4(oprot thrift.TProtocol) (err error) {
+	if p.IsSetCityID() {
+		if err := oprot.WriteFieldBegin("city_id", thrift.STRING, 4); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:city_id: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.CityID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.city_id (4) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:city_id: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Profile) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("UserProfile(%+v)", *p)
+	return fmt.Sprintf("Profile(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Validity
+type Token struct {
+	Token    string `thrift:"token,1,required" bson:"token,omitempty"`
+	Validity int64  `thrift:"validity,2,required" bson:"validity,omitempty"`
+}
+
+func NewToken() *Token {
+	return &Token{}
+}
+
+func (p *Token) GetToken() string {
+	return p.Token
+}
+
+func (p *Token) GetValidity() int64 {
+	return p.Validity
+}
+func (p *Token) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	var issetToken bool = false
+	var issetValidity bool = false
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+			issetToken = true
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+			issetValidity = true
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	if !issetToken {
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Token is not set"))
+	}
+	if !issetValidity {
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Validity is not set"))
+	}
+	return nil
+}
+
+func (p *Token) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *Token) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Validity = v
+	}
+	return nil
+}
+
+func (p *Token) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Token"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *Token) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *Token) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("validity", thrift.I64, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:validity: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.Validity)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.validity (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:validity: ", p), err)
+	}
+	return err
+}
+
+func (p *Token) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Token(%+v)", *p)
 }
 
 // Attributes:
 //  - Identifier
+//  - Password
 //  - Role
 //  - Profile
+//  - Token
 type User struct {
-	Identifier *string `thrift:"identifier,1" bson:"username,omitempty"`
-	// unused field # 2
-	Role    *string      `thrift:"role,3" db:"role" json:"role,omitempty"`
-	Profile *UserProfile `thrift:"profile,4" db:"profile" json:"profile,omitempty"`
+	Identifier *string  `thrift:"identifier,1" bson:"username,omitempty"`
+	Password   *string  `thrift:"password,2" bson:"password,omitempty"`
+	Role       *string  `thrift:"role,3" bson:"role,omitempty"`
+	Profile    *Profile `thrift:"profile,4" bson:"profile,omitempty"`
+	Token      *Token   `thrift:"token,5" bson:"token,omitempty"`
 }
 
 func NewUser() *User {
@@ -599,6 +785,15 @@ func (p *User) GetIdentifier() string {
 	return *p.Identifier
 }
 
+var User_Password_DEFAULT string
+
+func (p *User) GetPassword() string {
+	if !p.IsSetPassword() {
+		return User_Password_DEFAULT
+	}
+	return *p.Password
+}
+
 var User_Role_DEFAULT string
 
 func (p *User) GetRole() string {
@@ -608,16 +803,29 @@ func (p *User) GetRole() string {
 	return *p.Role
 }
 
-var User_Profile_DEFAULT *UserProfile
+var User_Profile_DEFAULT *Profile
 
-func (p *User) GetProfile() *UserProfile {
+func (p *User) GetProfile() *Profile {
 	if !p.IsSetProfile() {
 		return User_Profile_DEFAULT
 	}
 	return p.Profile
 }
+
+var User_Token_DEFAULT *Token
+
+func (p *User) GetToken() *Token {
+	if !p.IsSetToken() {
+		return User_Token_DEFAULT
+	}
+	return p.Token
+}
 func (p *User) IsSetIdentifier() bool {
 	return p.Identifier != nil
+}
+
+func (p *User) IsSetPassword() bool {
+	return p.Password != nil
 }
 
 func (p *User) IsSetRole() bool {
@@ -626,6 +834,10 @@ func (p *User) IsSetRole() bool {
 
 func (p *User) IsSetProfile() bool {
 	return p.Profile != nil
+}
+
+func (p *User) IsSetToken() bool {
+	return p.Token != nil
 }
 
 func (p *User) Read(iprot thrift.TProtocol) error {
@@ -646,12 +858,20 @@ func (p *User) Read(iprot thrift.TProtocol) error {
 			if err := p.ReadField1(iprot); err != nil {
 				return err
 			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
 		case 3:
 			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
 		case 4:
 			if err := p.ReadField4(iprot); err != nil {
+				return err
+			}
+		case 5:
+			if err := p.ReadField5(iprot); err != nil {
 				return err
 			}
 		default:
@@ -678,6 +898,15 @@ func (p *User) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *User) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Password = &v
+	}
+	return nil
+}
+
 func (p *User) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
@@ -688,9 +917,17 @@ func (p *User) ReadField3(iprot thrift.TProtocol) error {
 }
 
 func (p *User) ReadField4(iprot thrift.TProtocol) error {
-	p.Profile = &UserProfile{}
+	p.Profile = &Profile{}
 	if err := p.Profile.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Profile), err)
+	}
+	return nil
+}
+
+func (p *User) ReadField5(iprot thrift.TProtocol) error {
+	p.Token = &Token{}
+	if err := p.Token.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Token), err)
 	}
 	return nil
 }
@@ -702,10 +939,16 @@ func (p *User) Write(oprot thrift.TProtocol) error {
 	if err := p.writeField1(oprot); err != nil {
 		return err
 	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
 	if err := p.writeField3(oprot); err != nil {
 		return err
 	}
 	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField5(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -727,6 +970,21 @@ func (p *User) writeField1(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:identifier: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *User) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetPassword() {
+		if err := oprot.WriteFieldBegin("password", thrift.STRING, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:password: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Password)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.password (2) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:password: ", p), err)
 		}
 	}
 	return err
@@ -762,148 +1020,26 @@ func (p *User) writeField4(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
+func (p *User) writeField5(oprot thrift.TProtocol) (err error) {
+	if p.IsSetToken() {
+		if err := oprot.WriteFieldBegin("token", thrift.STRUCT, 5); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:token: ", p), err)
+		}
+		if err := p.Token.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Token), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:token: ", p), err)
+		}
+	}
+	return err
+}
+
 func (p *User) String() string {
 	if p == nil {
 		return "<nil>"
 	}
 	return fmt.Sprintf("User(%+v)", *p)
-}
-
-// Attributes:
-//  - Token
-//  - ValidityDuration
-type ThriftToken struct {
-	Token            string `thrift:"token,1,required" db:"token" json:"token"`
-	ValidityDuration int64  `thrift:"validityDuration,2,required" db:"validityDuration" json:"validityDuration"`
-}
-
-func NewThriftToken() *ThriftToken {
-	return &ThriftToken{}
-}
-
-func (p *ThriftToken) GetToken() string {
-	return p.Token
-}
-
-func (p *ThriftToken) GetValidityDuration() int64 {
-	return p.ValidityDuration
-}
-func (p *ThriftToken) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	var issetToken bool = false
-	var issetValidityDuration bool = false
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-			issetToken = true
-		case 2:
-			if err := p.ReadField2(iprot); err != nil {
-				return err
-			}
-			issetValidityDuration = true
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	if !issetToken {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Token is not set"))
-	}
-	if !issetValidityDuration {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field ValidityDuration is not set"))
-	}
-	return nil
-}
-
-func (p *ThriftToken) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
-		return thrift.PrependError("error reading field 1: ", err)
-	} else {
-		p.Token = v
-	}
-	return nil
-}
-
-func (p *ThriftToken) ReadField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(); err != nil {
-		return thrift.PrependError("error reading field 2: ", err)
-	} else {
-		p.ValidityDuration = v
-	}
-	return nil
-}
-
-func (p *ThriftToken) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("ThriftToken"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if err := p.writeField1(oprot); err != nil {
-		return err
-	}
-	if err := p.writeField2(oprot); err != nil {
-		return err
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *ThriftToken) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
-	}
-	if err := oprot.WriteString(string(p.Token)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
-	}
-	return err
-}
-
-func (p *ThriftToken) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("validityDuration", thrift.I64, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:validityDuration: ", p), err)
-	}
-	if err := oprot.WriteI64(int64(p.ValidityDuration)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.validityDuration (2) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:validityDuration: ", p), err)
-	}
-	return err
-}
-
-func (p *ThriftToken) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("ThriftToken(%+v)", *p)
 }
 
 // Attributes:
@@ -1982,10 +2118,10 @@ func (p *Area) String() string {
 //  - Coords
 //  - Center
 type City struct {
-	ID     string        `thrift:"id,1,required" db:"id" json:"id"`
-	Name   string        `thrift:"name,2,required" db:"name" json:"name"`
-	Coords []*Coordinate `thrift:"coords,3" db:"coords" json:"coords,omitempty"`
-	Center *Coordinate   `thrift:"center,4" db:"center" json:"center,omitempty"`
+	ID     string        `thrift:"id,1,required" bson:"cityid,omitempty"`
+	Name   string        `thrift:"name,2,required" bson:"name,omitempty"`
+	Coords []*Coordinate `thrift:"coords,3" bson:"coords,omitempty"`
+	Center *Coordinate   `thrift:"center,4" bson:"center,omitempty"`
 }
 
 func NewCity() *City {

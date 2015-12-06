@@ -4,6 +4,9 @@ namespace java  sebastians.sportan.networking
 
 //it is critical that structs are defined before services using them!
 
+const string ROLE_ADMIN = "admin"
+const string ROLE_SUPERADMIN = "superadmin"
+
 exception InvalidOperation {
   1: i32 what,
   2: string why,
@@ -18,25 +21,30 @@ struct UserCredentials {
   2: optional string passwordhash,
 }
 
-struct UserProfile {
-    1: optional string identifier,
-    2: optional string username (go.tag = "bson:\"username,omitempty\""),
-    3: optional binary profilepicture,
 
+struct Profile {
+    1: optional string identifier (go.tag = "bson:\"identifier,omitempty\""),
+    2: optional string username (go.tag = "bson:\"username,omitempty\""),
+    3: optional binary profilepicture (go.tag = "bson:\"image_id,omitempty\""),
+    4: optional string city_id (go.tag = "bson:\"city_id,omitempty\""),
+
+}
+
+struct Token {
+    1: required string token (go.tag = "bson:\"token,omitempty\""),
+    2: required i64 validity(go.tag = "bson:\"validity,omitempty\""),
 }
 
 struct User {
     1: optional string identifier (go.tag = "bson:\"username,omitempty\""),
     2: optional string password (go.tag = "bson:\"password,omitempty\""),
     3: optional string role (go.tag = "bson:\"role,omitempty\""),
-    4: optional UserProfile profile (go.tag = "bson:\"profile,omitempty\""),
+    4: optional Profile profile (go.tag = "bson:\"profile,omitempty\""),
+    5: optional Token token (go.tag = "bson:\"token,omitempty\""),
 
 }
 
-struct ThriftToken {
-    1: required string token (go.tag = "bson:\"token,omitempty\""),
-    2: required i64 validityDuration(go.tag = "bson:\"validity,omitempty\""),
-}
+
 
 struct Coordinate {
     1: required double lat,
@@ -71,14 +79,11 @@ struct Area {
 }
 
 struct City {
-  1: required string id,
-  2: required string name,
-  3: optional list<Coordinate> coords,
-  4: optional Coordinate center,
+  1: required string id (go.tag = "bson:\"cityid,omitempty\""),
+  2: required string name (go.tag = "bson:\"name,omitempty\""),
+  3: optional list<Coordinate> coords (go.tag = "bson:\"coords,omitempty\""),
+  4: optional Coordinate center (go.tag = "bson:\"center,omitempty\""),
 }
-
-
-
 
 
 service SportSvc {
@@ -102,10 +107,11 @@ service ImageSvc {
 service UserSvc {
     UserCredentials createUser(1: string password) throws (1:InvalidOperation ouch);
 
-//    UserProfile getProfile(1: string useridentifier);
-    void setProfile(1: string token, 2: UserProfile profile);
+    User getMe(1: string token);
 
-    ThriftToken requestToken(1: string username, 2: string plain_pw);
+    void setProfile(1: string token, 2: Profile profile);
+
+    Token requestToken(1: string username, 2: string plain_pw);
 
 
     void setAdmin(1: string token, 2: string userid);

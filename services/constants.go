@@ -14,5 +14,8 @@ var _ = thrift.ZERO
 var _ = fmt.Printf
 var _ = bytes.Equal
 
+const ROLE_ADMIN = "admin"
+const ROLE_SUPERADMIN = "superadmin"
+
 func init() {
 }

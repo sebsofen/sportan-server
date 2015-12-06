@@ -21,8 +21,9 @@ func Usage() {
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  UserCredentials createUser(string password)")
-	fmt.Fprintln(os.Stderr, "  void setProfile(string token, UserProfile profile)")
-	fmt.Fprintln(os.Stderr, "  ThriftToken requestToken(string username, string plain_pw)")
+	fmt.Fprintln(os.Stderr, "  User getMe(string token)")
+	fmt.Fprintln(os.Stderr, "  void setProfile(string token, Profile profile)")
+	fmt.Fprintln(os.Stderr, "  Token requestToken(string username, string plain_pw)")
 	fmt.Fprintln(os.Stderr, "  void setAdmin(string token, string userid)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
@@ -128,6 +129,16 @@ func main() {
 		fmt.Print(client.CreateUser(value0))
 		fmt.Print("\n")
 		break
+	case "getMe":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetMe requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetMe(value0))
+		fmt.Print("\n")
+		break
 	case "setProfile":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "SetProfile requires 2 args")
@@ -135,19 +146,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg47 := flag.Arg(2)
-		mbTrans48 := thrift.NewTMemoryBufferLen(len(arg47))
-		defer mbTrans48.Close()
-		_, err49 := mbTrans48.WriteString(arg47)
-		if err49 != nil {
+		arg50 := flag.Arg(2)
+		mbTrans51 := thrift.NewTMemoryBufferLen(len(arg50))
+		defer mbTrans51.Close()
+		_, err52 := mbTrans51.WriteString(arg50)
+		if err52 != nil {
 			Usage()
 			return
 		}
-		factory50 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt51 := factory50.GetProtocol(mbTrans48)
-		argvalue1 := services.NewUserProfile()
-		err52 := argvalue1.Read(jsProt51)
-		if err52 != nil {
+		factory53 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt54 := factory53.GetProtocol(mbTrans51)
+		argvalue1 := services.NewProfile()
+		err55 := argvalue1.Read(jsProt54)
+		if err55 != nil {
 			Usage()
 			return
 		}
