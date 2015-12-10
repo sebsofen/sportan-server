@@ -5,6 +5,7 @@ import (
 	"sportan/databases"
 	"sportan/services"
 	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2"
 )
 
 type City struct {
@@ -21,6 +22,14 @@ type CityRepository struct {
 func NewCityRepository(mConfig *databases.MongoConfig) *CityRepository {
 	//initialize the area, if not exists ;-)
 	//Collection is name
+
+	err :=mConfig.Collection.EnsureIndex(
+		mgo.Index{
+			Key: []string{"$2dsphere:center"}})
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	return &CityRepository{
 		mongo: mConfig,

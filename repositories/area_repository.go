@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"fmt"
+	"gopkg.in/mgo.v2"
 )
 
 type Area struct {
@@ -29,6 +30,22 @@ type AreaRepository struct {
 func NewAreaRepository(mConfig *databases.MongoConfig) *AreaRepository {
 	//initialize the area, if not exists ;-)
 	//Collection is name
+	/*
+	index := mgo.Index{
+		Key: []string{"$text:name", "$text:about"},
+	}
+
+	err = c.EnsureIndex(index)
+	if err != nil {
+		panic(err)
+	}
+	*/
+//use sportan;
+//	db.Areas.createIndex( { center: "2dsphere"});
+
+	mConfig.Collection.EnsureIndex(
+		mgo.Index{
+			Key: []string{"$2dsphere:center"}})
 
 	return &AreaRepository{
 		mongo: mConfig,

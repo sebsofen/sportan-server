@@ -2,6 +2,8 @@
     "OwnIP": "localhost:9090",
     "MongoDatabase": "sportan",
     "MongoHost": "mongodb://localhost:27017",
+    "MongoUser" : "optional",
+    "MongoPw" : "optional",
     "InfluxUser": "sportan",
     "InfluxPass": "pass",
     "InfluxDatabase": "sportan",

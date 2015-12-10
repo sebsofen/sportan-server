@@ -68,6 +68,7 @@ type Profile struct {
 
 //create a new user Repository
 func NewUserRepository(mConfig *databases.MongoConfig) *UserRepository {
+
 	return &UserRepository{
 		mongo: mConfig,
 	}

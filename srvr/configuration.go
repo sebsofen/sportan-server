@@ -9,8 +9,10 @@ import (
 // Configuration is used to store json information
 type Configuration struct {
 	OwnIP          string
-	MongoHost      string
+	MongoHost      []string
 	MongoDatabase  string
+	MongoUser	   string
+	MongoPw  	   string
 	InfluxHost     string
 	InfluxDatabase string
 	InfluxPass     string
