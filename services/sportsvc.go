@@ -102,16 +102,16 @@ func (p *SportSvcClient) recvCreateSport() (value *Sport, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error3 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error4 error
-		error4, err = error3.Read(iprot)
+		error5 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error6 error
+		error6, err = error5.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error4
+		err = error6
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -179,16 +179,16 @@ func (p *SportSvcClient) recvGetAllSports() (value []*Sport, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error5 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error6 error
-		error6, err = error5.Read(iprot)
+		error7 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error8 error
+		error8, err = error7.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error6
+		err = error8
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -226,10 +226,10 @@ func (p *SportSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction 
 
 func NewSportSvcProcessor(handler SportSvc) *SportSvcProcessor {
 
-	self7 := &SportSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self7.processorMap["createSport"] = &sportSvcProcessorCreateSport{handler: handler}
-	self7.processorMap["getAllSports"] = &sportSvcProcessorGetAllSports{handler: handler}
-	return self7
+	self9 := &SportSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self9.processorMap["createSport"] = &sportSvcProcessorCreateSport{handler: handler}
+	self9.processorMap["getAllSports"] = &sportSvcProcessorGetAllSports{handler: handler}
+	return self9
 }
 
 func (p *SportSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -242,12 +242,12 @@ func (p *SportSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x8 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x10 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x8.Write(oprot)
+	x10.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x8
+	return false, x10
 
 }
 
@@ -735,11 +735,11 @@ func (p *SportSvcGetAllSportsResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*Sport, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem9 := &Sport{}
-		if err := _elem9.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem9), err)
+		_elem11 := &Sport{}
+		if err := _elem11.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem11), err)
 		}
-		p.Success = append(p.Success, _elem9)
+		p.Success = append(p.Success, _elem11)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

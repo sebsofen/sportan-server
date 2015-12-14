@@ -22,6 +22,12 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  UserCredentials createUser(string password)")
 	fmt.Fprintln(os.Stderr, "  User getMe(string token)")
+	fmt.Fprintln(os.Stderr, "  User getUserById(string token, string userid)")
+	fmt.Fprintln(os.Stderr, "   getFriends(string token)")
+	fmt.Fprintln(os.Stderr, "   getFriendRequests(string token)")
+	fmt.Fprintln(os.Stderr, "  void acceptFriendRequest(string token, string userid)")
+	fmt.Fprintln(os.Stderr, "  void declineFriendRequest(string token, string userid)")
+	fmt.Fprintln(os.Stderr, "  void sendFriendRequest(string token, string userid)")
 	fmt.Fprintln(os.Stderr, "  void setProfile(string token, Profile profile)")
 	fmt.Fprintln(os.Stderr, "  Token requestToken(string username, string plain_pw)")
 	fmt.Fprintln(os.Stderr, "  void setAdmin(string token, string userid)")
@@ -139,6 +145,74 @@ func main() {
 		fmt.Print(client.GetMe(value0))
 		fmt.Print("\n")
 		break
+	case "getUserById":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetUserById requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.GetUserById(value0, value1))
+		fmt.Print("\n")
+		break
+	case "getFriends":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetFriends requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetFriends(value0))
+		fmt.Print("\n")
+		break
+	case "getFriendRequests":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetFriendRequests requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetFriendRequests(value0))
+		fmt.Print("\n")
+		break
+	case "acceptFriendRequest":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "AcceptFriendRequest requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.AcceptFriendRequest(value0, value1))
+		fmt.Print("\n")
+		break
+	case "declineFriendRequest":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "DeclineFriendRequest requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.DeclineFriendRequest(value0, value1))
+		fmt.Print("\n")
+		break
+	case "sendFriendRequest":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "SendFriendRequest requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.SendFriendRequest(value0, value1))
+		fmt.Print("\n")
+		break
 	case "setProfile":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "SetProfile requires 2 args")
@@ -146,19 +220,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg50 := flag.Arg(2)
-		mbTrans51 := thrift.NewTMemoryBufferLen(len(arg50))
-		defer mbTrans51.Close()
-		_, err52 := mbTrans51.WriteString(arg50)
-		if err52 != nil {
+		arg76 := flag.Arg(2)
+		mbTrans77 := thrift.NewTMemoryBufferLen(len(arg76))
+		defer mbTrans77.Close()
+		_, err78 := mbTrans77.WriteString(arg76)
+		if err78 != nil {
 			Usage()
 			return
 		}
-		factory53 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt54 := factory53.GetProtocol(mbTrans51)
+		factory79 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt80 := factory79.GetProtocol(mbTrans77)
 		argvalue1 := services.NewProfile()
-		err55 := argvalue1.Read(jsProt54)
-		if err55 != nil {
+		err81 := argvalue1.Read(jsProt80)
+		if err81 != nil {
 			Usage()
 			return
 		}

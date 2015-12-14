@@ -25,6 +25,28 @@ type UserSvc interface { //Userrelated stuff (creation etc)
 	GetMe(token string) (r *User, err error)
 	// Parameters:
 	//  - Token
+	//  - Userid
+	GetUserById(token string, userid string) (r *User, err error)
+	// Parameters:
+	//  - Token
+	GetFriends(token string) (r []*User, err error)
+	// Parameters:
+	//  - Token
+	GetFriendRequests(token string) (r []*User, err error)
+	// Parameters:
+	//  - Token
+	//  - Userid
+	AcceptFriendRequest(token string, userid string) (err error)
+	// Parameters:
+	//  - Token
+	//  - Userid
+	DeclineFriendRequest(token string, userid string) (err error)
+	// Parameters:
+	//  - Token
+	//  - Userid
+	SendFriendRequest(token string, userid string) (err error)
+	// Parameters:
+	//  - Token
 	//  - Profile
 	SetProfile(token string, profile *Profile) (err error)
 	// Parameters:
@@ -115,16 +137,16 @@ func (p *UserSvcClient) recvCreateUser() (value *UserCredentials, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error35 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error36 error
-		error36, err = error35.Read(iprot)
+		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error38 error
+		error38, err = error37.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error36
+		err = error38
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -196,16 +218,16 @@ func (p *UserSvcClient) recvGetMe() (value *User, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error38 error
-		error38, err = error37.Read(iprot)
+		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error40 error
+		error40, err = error39.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error38
+		err = error40
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -220,6 +242,473 @@ func (p *UserSvcClient) recvGetMe() (value *User, err error) {
 		return
 	}
 	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Token
+//  - Userid
+func (p *UserSvcClient) GetUserById(token string, userid string) (r *User, err error) {
+	if err = p.sendGetUserById(token, userid); err != nil {
+		return
+	}
+	return p.recvGetUserById()
+}
+
+func (p *UserSvcClient) sendGetUserById(token string, userid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getUserById", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcGetUserByIdArgs{
+		Token:  token,
+		Userid: userid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvGetUserById() (value *User, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getUserById" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getUserById failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getUserById failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error42 error
+		error42, err = error41.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error42
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getUserById failed: invalid message type")
+		return
+	}
+	result := UserSvcGetUserByIdResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Token
+func (p *UserSvcClient) GetFriends(token string) (r []*User, err error) {
+	if err = p.sendGetFriends(token); err != nil {
+		return
+	}
+	return p.recvGetFriends()
+}
+
+func (p *UserSvcClient) sendGetFriends(token string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getFriends", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcGetFriendsArgs{
+		Token: token,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvGetFriends() (value []*User, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getFriends" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getFriends failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getFriends failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error44 error
+		error44, err = error43.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error44
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getFriends failed: invalid message type")
+		return
+	}
+	result := UserSvcGetFriendsResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Token
+func (p *UserSvcClient) GetFriendRequests(token string) (r []*User, err error) {
+	if err = p.sendGetFriendRequests(token); err != nil {
+		return
+	}
+	return p.recvGetFriendRequests()
+}
+
+func (p *UserSvcClient) sendGetFriendRequests(token string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getFriendRequests", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcGetFriendRequestsArgs{
+		Token: token,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvGetFriendRequests() (value []*User, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getFriendRequests" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getFriendRequests failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getFriendRequests failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error45 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error46 error
+		error46, err = error45.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error46
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getFriendRequests failed: invalid message type")
+		return
+	}
+	result := UserSvcGetFriendRequestsResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Token
+//  - Userid
+func (p *UserSvcClient) AcceptFriendRequest(token string, userid string) (err error) {
+	if err = p.sendAcceptFriendRequest(token, userid); err != nil {
+		return
+	}
+	return p.recvAcceptFriendRequest()
+}
+
+func (p *UserSvcClient) sendAcceptFriendRequest(token string, userid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("acceptFriendRequest", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcAcceptFriendRequestArgs{
+		Token:  token,
+		Userid: userid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvAcceptFriendRequest() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "acceptFriendRequest" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "acceptFriendRequest failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "acceptFriendRequest failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error47 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error48 error
+		error48, err = error47.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error48
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "acceptFriendRequest failed: invalid message type")
+		return
+	}
+	result := UserSvcAcceptFriendRequestResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Token
+//  - Userid
+func (p *UserSvcClient) DeclineFriendRequest(token string, userid string) (err error) {
+	if err = p.sendDeclineFriendRequest(token, userid); err != nil {
+		return
+	}
+	return p.recvDeclineFriendRequest()
+}
+
+func (p *UserSvcClient) sendDeclineFriendRequest(token string, userid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("declineFriendRequest", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcDeclineFriendRequestArgs{
+		Token:  token,
+		Userid: userid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvDeclineFriendRequest() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "declineFriendRequest" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "declineFriendRequest failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "declineFriendRequest failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error49 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error50 error
+		error50, err = error49.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error50
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "declineFriendRequest failed: invalid message type")
+		return
+	}
+	result := UserSvcDeclineFriendRequestResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Token
+//  - Userid
+func (p *UserSvcClient) SendFriendRequest(token string, userid string) (err error) {
+	if err = p.sendSendFriendRequest(token, userid); err != nil {
+		return
+	}
+	return p.recvSendFriendRequest()
+}
+
+func (p *UserSvcClient) sendSendFriendRequest(token string, userid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("sendFriendRequest", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := UserSvcSendFriendRequestArgs{
+		Token:  token,
+		Userid: userid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *UserSvcClient) recvSendFriendRequest() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "sendFriendRequest" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "sendFriendRequest failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "sendFriendRequest failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error51 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error52 error
+		error52, err = error51.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error52
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "sendFriendRequest failed: invalid message type")
+		return
+	}
+	result := UserSvcSendFriendRequestResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
 	return
 }
 
@@ -275,16 +764,16 @@ func (p *UserSvcClient) recvSetProfile() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error40 error
-		error40, err = error39.Read(iprot)
+		error53 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error54 error
+		error54, err = error53.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error40
+		err = error54
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -353,16 +842,16 @@ func (p *UserSvcClient) recvRequestToken() (value *Token, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error42 error
-		error42, err = error41.Read(iprot)
+		error55 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error56 error
+		error56, err = error55.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error42
+		err = error56
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -432,16 +921,16 @@ func (p *UserSvcClient) recvSetAdmin() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error44 error
-		error44, err = error43.Read(iprot)
+		error57 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error58 error
+		error58, err = error57.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error44
+		err = error58
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -478,13 +967,19 @@ func (p *UserSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewUserSvcProcessor(handler UserSvc) *UserSvcProcessor {
 
-	self45 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self45.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
-	self45.processorMap["getMe"] = &userSvcProcessorGetMe{handler: handler}
-	self45.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
-	self45.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
-	self45.processorMap["setAdmin"] = &userSvcProcessorSetAdmin{handler: handler}
-	return self45
+	self59 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self59.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
+	self59.processorMap["getMe"] = &userSvcProcessorGetMe{handler: handler}
+	self59.processorMap["getUserById"] = &userSvcProcessorGetUserById{handler: handler}
+	self59.processorMap["getFriends"] = &userSvcProcessorGetFriends{handler: handler}
+	self59.processorMap["getFriendRequests"] = &userSvcProcessorGetFriendRequests{handler: handler}
+	self59.processorMap["acceptFriendRequest"] = &userSvcProcessorAcceptFriendRequest{handler: handler}
+	self59.processorMap["declineFriendRequest"] = &userSvcProcessorDeclineFriendRequest{handler: handler}
+	self59.processorMap["sendFriendRequest"] = &userSvcProcessorSendFriendRequest{handler: handler}
+	self59.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
+	self59.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
+	self59.processorMap["setAdmin"] = &userSvcProcessorSetAdmin{handler: handler}
+	return self59
 }
 
 func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -497,12 +992,12 @@ func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x46 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x60 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x46.Write(oprot)
+	x60.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x46
+	return false, x60
 
 }
 
@@ -590,6 +1085,285 @@ func (p *userSvcProcessorGetMe) Process(seqId int32, iprot, oprot thrift.TProtoc
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("getMe", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorGetUserById struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorGetUserById) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcGetUserByIdArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getUserById", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcGetUserByIdResult{}
+	var retval *User
+	var err2 error
+	if retval, err2 = p.handler.GetUserById(args.Token, args.Userid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getUserById: "+err2.Error())
+		oprot.WriteMessageBegin("getUserById", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getUserById", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorGetFriends struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorGetFriends) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcGetFriendsArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getFriends", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcGetFriendsResult{}
+	var retval []*User
+	var err2 error
+	if retval, err2 = p.handler.GetFriends(args.Token); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getFriends: "+err2.Error())
+		oprot.WriteMessageBegin("getFriends", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getFriends", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorGetFriendRequests struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorGetFriendRequests) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcGetFriendRequestsArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getFriendRequests", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcGetFriendRequestsResult{}
+	var retval []*User
+	var err2 error
+	if retval, err2 = p.handler.GetFriendRequests(args.Token); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getFriendRequests: "+err2.Error())
+		oprot.WriteMessageBegin("getFriendRequests", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getFriendRequests", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorAcceptFriendRequest struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorAcceptFriendRequest) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcAcceptFriendRequestArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("acceptFriendRequest", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcAcceptFriendRequestResult{}
+	var err2 error
+	if err2 = p.handler.AcceptFriendRequest(args.Token, args.Userid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing acceptFriendRequest: "+err2.Error())
+		oprot.WriteMessageBegin("acceptFriendRequest", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("acceptFriendRequest", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorDeclineFriendRequest struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorDeclineFriendRequest) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcDeclineFriendRequestArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("declineFriendRequest", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcDeclineFriendRequestResult{}
+	var err2 error
+	if err2 = p.handler.DeclineFriendRequest(args.Token, args.Userid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing declineFriendRequest: "+err2.Error())
+		oprot.WriteMessageBegin("declineFriendRequest", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("declineFriendRequest", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type userSvcProcessorSendFriendRequest struct {
+	handler UserSvc
+}
+
+func (p *userSvcProcessorSendFriendRequest) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := UserSvcSendFriendRequestArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("sendFriendRequest", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := UserSvcSendFriendRequestResult{}
+	var err2 error
+	if err2 = p.handler.SendFriendRequest(args.Token, args.Userid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing sendFriendRequest: "+err2.Error())
+		oprot.WriteMessageBegin("sendFriendRequest", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("sendFriendRequest", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1174,6 +1948,1188 @@ func (p *UserSvcGetMeResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("UserSvcGetMeResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Userid
+type UserSvcGetUserByIdArgs struct {
+	Token  string `thrift:"token,1" db:"token" json:"token"`
+	Userid string `thrift:"userid,2" db:"userid" json:"userid"`
+}
+
+func NewUserSvcGetUserByIdArgs() *UserSvcGetUserByIdArgs {
+	return &UserSvcGetUserByIdArgs{}
+}
+
+func (p *UserSvcGetUserByIdArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *UserSvcGetUserByIdArgs) GetUserid() string {
+	return p.Userid
+}
+func (p *UserSvcGetUserByIdArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Userid = v
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getUserById_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcGetUserByIdArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("userid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:userid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Userid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.userid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:userid: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcGetUserByIdArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetUserByIdArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type UserSvcGetUserByIdResult struct {
+	Success *User `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewUserSvcGetUserByIdResult() *UserSvcGetUserByIdResult {
+	return &UserSvcGetUserByIdResult{}
+}
+
+var UserSvcGetUserByIdResult_Success_DEFAULT *User
+
+func (p *UserSvcGetUserByIdResult) GetSuccess() *User {
+	if !p.IsSetSuccess() {
+		return UserSvcGetUserByIdResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *UserSvcGetUserByIdResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *UserSvcGetUserByIdResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &User{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getUserById_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetUserByIdResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *UserSvcGetUserByIdResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetUserByIdResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+type UserSvcGetFriendsArgs struct {
+	Token string `thrift:"token,1" db:"token" json:"token"`
+}
+
+func NewUserSvcGetFriendsArgs() *UserSvcGetFriendsArgs {
+	return &UserSvcGetFriendsArgs{}
+}
+
+func (p *UserSvcGetFriendsArgs) GetToken() string {
+	return p.Token
+}
+func (p *UserSvcGetFriendsArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendsArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendsArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getFriends_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendsArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcGetFriendsArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetFriendsArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type UserSvcGetFriendsResult struct {
+	Success []*User `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewUserSvcGetFriendsResult() *UserSvcGetFriendsResult {
+	return &UserSvcGetFriendsResult{}
+}
+
+var UserSvcGetFriendsResult_Success_DEFAULT []*User
+
+func (p *UserSvcGetFriendsResult) GetSuccess() []*User {
+	return p.Success
+}
+func (p *UserSvcGetFriendsResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *UserSvcGetFriendsResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendsResult) ReadField0(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]*User, 0, size)
+	p.Success = tSlice
+	for i := 0; i < size; i++ {
+		_elem61 := &User{}
+		if err := _elem61.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem61), err)
+		}
+		p.Success = append(p.Success, _elem61)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendsResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getFriends_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendsResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.LIST, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Success)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Success {
+			if err := v.Write(oprot); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *UserSvcGetFriendsResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetFriendsResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+type UserSvcGetFriendRequestsArgs struct {
+	Token string `thrift:"token,1" db:"token" json:"token"`
+}
+
+func NewUserSvcGetFriendRequestsArgs() *UserSvcGetFriendRequestsArgs {
+	return &UserSvcGetFriendRequestsArgs{}
+}
+
+func (p *UserSvcGetFriendRequestsArgs) GetToken() string {
+	return p.Token
+}
+func (p *UserSvcGetFriendRequestsArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendRequestsArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendRequestsArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getFriendRequests_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendRequestsArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcGetFriendRequestsArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetFriendRequestsArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type UserSvcGetFriendRequestsResult struct {
+	Success []*User `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewUserSvcGetFriendRequestsResult() *UserSvcGetFriendRequestsResult {
+	return &UserSvcGetFriendRequestsResult{}
+}
+
+var UserSvcGetFriendRequestsResult_Success_DEFAULT []*User
+
+func (p *UserSvcGetFriendRequestsResult) GetSuccess() []*User {
+	return p.Success
+}
+func (p *UserSvcGetFriendRequestsResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *UserSvcGetFriendRequestsResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendRequestsResult) ReadField0(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]*User, 0, size)
+	p.Success = tSlice
+	for i := 0; i < size; i++ {
+		_elem62 := &User{}
+		if err := _elem62.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem62), err)
+		}
+		p.Success = append(p.Success, _elem62)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendRequestsResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getFriendRequests_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcGetFriendRequestsResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.LIST, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Success)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Success {
+			if err := v.Write(oprot); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *UserSvcGetFriendRequestsResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcGetFriendRequestsResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Userid
+type UserSvcAcceptFriendRequestArgs struct {
+	Token  string `thrift:"token,1" db:"token" json:"token"`
+	Userid string `thrift:"userid,2" db:"userid" json:"userid"`
+}
+
+func NewUserSvcAcceptFriendRequestArgs() *UserSvcAcceptFriendRequestArgs {
+	return &UserSvcAcceptFriendRequestArgs{}
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) GetUserid() string {
+	return p.Userid
+}
+func (p *UserSvcAcceptFriendRequestArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Userid = v
+	}
+	return nil
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("acceptFriendRequest_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("userid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:userid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Userid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.userid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:userid: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcAcceptFriendRequestArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcAcceptFriendRequestArgs(%+v)", *p)
+}
+
+type UserSvcAcceptFriendRequestResult struct {
+}
+
+func NewUserSvcAcceptFriendRequestResult() *UserSvcAcceptFriendRequestResult {
+	return &UserSvcAcceptFriendRequestResult{}
+}
+
+func (p *UserSvcAcceptFriendRequestResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcAcceptFriendRequestResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("acceptFriendRequest_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcAcceptFriendRequestResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcAcceptFriendRequestResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Userid
+type UserSvcDeclineFriendRequestArgs struct {
+	Token  string `thrift:"token,1" db:"token" json:"token"`
+	Userid string `thrift:"userid,2" db:"userid" json:"userid"`
+}
+
+func NewUserSvcDeclineFriendRequestArgs() *UserSvcDeclineFriendRequestArgs {
+	return &UserSvcDeclineFriendRequestArgs{}
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) GetUserid() string {
+	return p.Userid
+}
+func (p *UserSvcDeclineFriendRequestArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Userid = v
+	}
+	return nil
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("declineFriendRequest_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("userid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:userid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Userid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.userid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:userid: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcDeclineFriendRequestArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcDeclineFriendRequestArgs(%+v)", *p)
+}
+
+type UserSvcDeclineFriendRequestResult struct {
+}
+
+func NewUserSvcDeclineFriendRequestResult() *UserSvcDeclineFriendRequestResult {
+	return &UserSvcDeclineFriendRequestResult{}
+}
+
+func (p *UserSvcDeclineFriendRequestResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcDeclineFriendRequestResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("declineFriendRequest_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcDeclineFriendRequestResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcDeclineFriendRequestResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Userid
+type UserSvcSendFriendRequestArgs struct {
+	Token  string `thrift:"token,1" db:"token" json:"token"`
+	Userid string `thrift:"userid,2" db:"userid" json:"userid"`
+}
+
+func NewUserSvcSendFriendRequestArgs() *UserSvcSendFriendRequestArgs {
+	return &UserSvcSendFriendRequestArgs{}
+}
+
+func (p *UserSvcSendFriendRequestArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *UserSvcSendFriendRequestArgs) GetUserid() string {
+	return p.Userid
+}
+func (p *UserSvcSendFriendRequestArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcSendFriendRequestArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *UserSvcSendFriendRequestArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Userid = v
+	}
+	return nil
+}
+
+func (p *UserSvcSendFriendRequestArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("sendFriendRequest_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcSendFriendRequestArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcSendFriendRequestArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("userid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:userid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Userid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.userid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:userid: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcSendFriendRequestArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcSendFriendRequestArgs(%+v)", *p)
+}
+
+type UserSvcSendFriendRequestResult struct {
+}
+
+func NewUserSvcSendFriendRequestResult() *UserSvcSendFriendRequestResult {
+	return &UserSvcSendFriendRequestResult{}
+}
+
+func (p *UserSvcSendFriendRequestResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *UserSvcSendFriendRequestResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("sendFriendRequest_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *UserSvcSendFriendRequestResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UserSvcSendFriendRequestResult(%+v)", *p)
 }
 
 // Attributes:

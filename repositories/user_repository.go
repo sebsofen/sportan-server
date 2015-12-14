@@ -18,54 +18,6 @@ type UserRepository struct {
 
 
 
-
-// user as represented in database. be sure to update user conversion when needed
-/*
-type User struct {
-	Username     *string   `bson:"username,omitempty"`
-	Password     *string   `bson:"password,omitempty"`
-	Token        *Token   `bson:"token,omitempty"`
-	Friends      []string `bson:"friends,omitempty"`
-	Profile 	*Profile  `bson:"profile,omitempty"`
-	Role 	*string `bson:"role,omitempty"`
-}
-
-type SUser struct {
-	*services.User
-}
-
-func (us *SUser) ToMongoUser() (*User) {
-	return &User {
-		Username : us.Identifier,
-		Role : us.Role,
-	}
-}
-
-func (u *User) ToUser() (*services.User) {
-	return &services.User{
-		Identifier: u.Username,
-		Role: u.Role,
-	}
-}
-
-func (u *User) IsSuperAdmin() bool {
-	return u.Role != nil && *u.Role == ROLE_SUPERADMIN
-}
-
-
-
-
-type Token struct {
-	Token    string `bson:"token,omitempty"`
-	Validity int64  `bson:"validity,omitempty"`
-}
-
-type Profile struct {
-	Username    string `bson:"username,omitempty"`
-
-}
-*/
-
 //create a new user Repository
 func NewUserRepository(mConfig *databases.MongoConfig) *UserRepository {
 
@@ -102,9 +54,7 @@ func (rep *UserRepository) CreateTokenForUser(uname string, hashedpw string) (*s
 
 func (rep *UserRepository) UpdateProfile(token string, profile *services.Profile) error {
 	err := rep.mongo.Collection.Update(bson.M{"token.token": token},
-	 bson.M{"$set" : services.User{Profile: &services.Profile {
-		Identifier : profile.Username,
-	}}})
+	 bson.M{"$set" : services.User{Profile: profile }})
 
 	return err
 }
@@ -141,23 +91,29 @@ func (rep *UserRepository) GetUserByToken(token string) (*services.User,error) {
 	return rep.GetUserById(userid)
 }
 
-/*
-//TODO Autocompletion for this
-func (rep *UserRepository) MongoUserToUser(user *User) (*services.User) {
-	return &services.User{
-		Identifier: user.Username,
-	}
+
+
+
+func(rep *UserRepository) PutFriendRequest(receiverid string, senderid string) error {
+	_, err := rep.mongo.Collection.Upsert(bson.M{"username": receiverid}, bson.M{"$addToSet": bson.M{"friendrequests":senderid}})
+	return err
 }
 
-//TODO Autocompletion for this
-func (rep *UserRepository) UserToMongoUser(user *services.User) (*User) {
-	return &User {
-		Username: user.Identifier,
-	}
+func(rep *UserRepository) PutFriend(userid string, friendid string) error {
+	_, err := rep.mongo.Collection.Upsert(bson.M{"username": userid}, bson.M{"$addToSet": bson.M{"friends":friendid}})
+	return err
 }
-*/
 
-//TODO TO BE IMPLEMENTED
+func (rep *UserRepository) RemoveFriend(userid string, friendid string) error {
+	err := rep.mongo.Collection.Update(bson.M{"username": userid}, bson.M{"$pull": bson.M{"friends":friendid}})
+	return err
+}
+
+func (rep *UserRepository) RemoveFriendRequest(userid string, friendid string) error {
+	err := rep.mongo.Collection.Update(bson.M{"username": userid}, bson.M{"$pull": bson.M{"friendrequests":friendid}})
+	return err
+}
+
 func (rep *UserRepository) IsAdmin(userid string) bool {
 	var user *services.User
 	rep.mongo.Collection.Find(bson.M{"username": userid}).One(&user)
@@ -210,3 +166,5 @@ func randToken() string {
 
 	return base64.URLEncoding.EncodeToString(rb)
 }
+
+

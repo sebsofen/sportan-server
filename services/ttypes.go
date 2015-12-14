@@ -764,12 +764,16 @@ func (p *Token) String() string {
 //  - Role
 //  - Profile
 //  - Token
+//  - Friends
+//  - Friendrequests
 type User struct {
-	Identifier *string  `thrift:"identifier,1" bson:"username,omitempty"`
-	Password   *string  `thrift:"password,2" bson:"password,omitempty"`
-	Role       *string  `thrift:"role,3" bson:"role,omitempty"`
-	Profile    *Profile `thrift:"profile,4" bson:"profile,omitempty"`
-	Token      *Token   `thrift:"token,5" bson:"token,omitempty"`
+	Identifier     *string  `thrift:"identifier,1" bson:"username,omitempty"`
+	Password       *string  `thrift:"password,2" bson:"password,omitempty"`
+	Role           *string  `thrift:"role,3" bson:"role,omitempty"`
+	Profile        *Profile `thrift:"profile,4" bson:"profile,omitempty"`
+	Token          *Token   `thrift:"token,5" bson:"token,omitempty"`
+	Friends        []string `thrift:"friends,6" bson:"friends,omitempty"`
+	Friendrequests []string `thrift:"friendrequests,7" bson:"friendrequests,omitempty"`
 }
 
 func NewUser() *User {
@@ -820,6 +824,18 @@ func (p *User) GetToken() *Token {
 	}
 	return p.Token
 }
+
+var User_Friends_DEFAULT []string
+
+func (p *User) GetFriends() []string {
+	return p.Friends
+}
+
+var User_Friendrequests_DEFAULT []string
+
+func (p *User) GetFriendrequests() []string {
+	return p.Friendrequests
+}
 func (p *User) IsSetIdentifier() bool {
 	return p.Identifier != nil
 }
@@ -838,6 +854,14 @@ func (p *User) IsSetProfile() bool {
 
 func (p *User) IsSetToken() bool {
 	return p.Token != nil
+}
+
+func (p *User) IsSetFriends() bool {
+	return p.Friends != nil
+}
+
+func (p *User) IsSetFriendrequests() bool {
+	return p.Friendrequests != nil
 }
 
 func (p *User) Read(iprot thrift.TProtocol) error {
@@ -872,6 +896,14 @@ func (p *User) Read(iprot thrift.TProtocol) error {
 			}
 		case 5:
 			if err := p.ReadField5(iprot); err != nil {
+				return err
+			}
+		case 6:
+			if err := p.ReadField6(iprot); err != nil {
+				return err
+			}
+		case 7:
+			if err := p.ReadField7(iprot); err != nil {
 				return err
 			}
 		default:
@@ -932,6 +964,50 @@ func (p *User) ReadField5(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *User) ReadField6(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.Friends = tSlice
+	for i := 0; i < size; i++ {
+		var _elem0 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem0 = v
+		}
+		p.Friends = append(p.Friends, _elem0)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *User) ReadField7(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.Friendrequests = tSlice
+	for i := 0; i < size; i++ {
+		var _elem1 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem1 = v
+		}
+		p.Friendrequests = append(p.Friendrequests, _elem1)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
 func (p *User) Write(oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin("User"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
@@ -949,6 +1025,12 @@ func (p *User) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField5(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField6(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField7(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -1030,6 +1112,52 @@ func (p *User) writeField5(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:token: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *User) writeField6(oprot thrift.TProtocol) (err error) {
+	if p.IsSetFriends() {
+		if err := oprot.WriteFieldBegin("friends", thrift.LIST, 6); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:friends: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.Friends)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Friends {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 6:friends: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *User) writeField7(oprot thrift.TProtocol) (err error) {
+	if p.IsSetFriendrequests() {
+		if err := oprot.WriteFieldBegin("friendrequests", thrift.LIST, 7); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:friendrequests: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.Friendrequests)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Friendrequests {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 7:friendrequests: ", p), err)
 		}
 	}
 	return err
@@ -1863,13 +1991,13 @@ func (p *Area) ReadField3(iprot thrift.TProtocol) error {
 	tSlice := make([]string, 0, size)
 	p.Sports = tSlice
 	for i := 0; i < size; i++ {
-		var _elem0 string
+		var _elem2 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem0 = v
+			_elem2 = v
 		}
-		p.Sports = append(p.Sports, _elem0)
+		p.Sports = append(p.Sports, _elem2)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -1893,11 +2021,11 @@ func (p *Area) ReadField5(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem1 := &Coordinate{}
-		if err := _elem1.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem1), err)
+		_elem3 := &Coordinate{}
+		if err := _elem3.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem3), err)
 		}
-		p.Coords = append(p.Coords, _elem1)
+		p.Coords = append(p.Coords, _elem3)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2240,11 +2368,11 @@ func (p *City) ReadField3(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem2 := &Coordinate{}
-		if err := _elem2.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem2), err)
+		_elem4 := &Coordinate{}
+		if err := _elem4.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
 		}
-		p.Coords = append(p.Coords, _elem2)
+		p.Coords = append(p.Coords, _elem4)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
