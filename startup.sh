@@ -1,3 +1,3 @@
 #!/bin/bash
-./main
+./main &
 echo $! >pid
