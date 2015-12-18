@@ -126,19 +126,19 @@ func main() {
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		arg145 := flag.Arg(3)
-		mbTrans146 := thrift.NewTMemoryBufferLen(len(arg145))
-		defer mbTrans146.Close()
-		_, err147 := mbTrans146.WriteString(arg145)
-		if err147 != nil {
+		arg148 := flag.Arg(3)
+		mbTrans149 := thrift.NewTMemoryBufferLen(len(arg148))
+		defer mbTrans149.Close()
+		_, err150 := mbTrans149.WriteString(arg148)
+		if err150 != nil {
 			Usage()
 			return
 		}
-		factory148 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt149 := factory148.GetProtocol(mbTrans146)
+		factory151 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt152 := factory151.GetProtocol(mbTrans149)
 		containerStruct2 := services.NewCitySvcCreateCityArgs()
-		err150 := containerStruct2.ReadField3(jsProt149)
-		if err150 != nil {
+		err153 := containerStruct2.ReadField3(jsProt152)
+		if err153 != nil {
 			Usage()
 			return
 		}
@@ -152,25 +152,25 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetNearBy requires 2 args")
 			flag.Usage()
 		}
-		arg151 := flag.Arg(1)
-		mbTrans152 := thrift.NewTMemoryBufferLen(len(arg151))
-		defer mbTrans152.Close()
-		_, err153 := mbTrans152.WriteString(arg151)
-		if err153 != nil {
-			Usage()
-			return
-		}
-		factory154 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt155 := factory154.GetProtocol(mbTrans152)
-		argvalue0 := services.NewCoordinate()
-		err156 := argvalue0.Read(jsProt155)
+		arg154 := flag.Arg(1)
+		mbTrans155 := thrift.NewTMemoryBufferLen(len(arg154))
+		defer mbTrans155.Close()
+		_, err156 := mbTrans155.WriteString(arg154)
 		if err156 != nil {
 			Usage()
 			return
 		}
+		factory157 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt158 := factory157.GetProtocol(mbTrans155)
+		argvalue0 := services.NewCoordinate()
+		err159 := argvalue0.Read(jsProt158)
+		if err159 != nil {
+			Usage()
+			return
+		}
 		value0 := argvalue0
-		tmp1, err157 := (strconv.Atoi(flag.Arg(2)))
-		if err157 != nil {
+		tmp1, err160 := (strconv.Atoi(flag.Arg(2)))
+		if err160 != nil {
 			Usage()
 			return
 		}

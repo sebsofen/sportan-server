@@ -69,14 +69,14 @@ struct Sport {
 }
 
 struct Area {
-  1: optional string id,
-  2: optional string title,
-  3: optional list<string> sports,
-  4: optional Coordinate center,
-  5: optional list<Coordinate> coords,
-  6: optional string description,
-  7: optional string cityid,
-  8: optional string imageid,
+  1: optional string id (go.tag = "bson:\"areaid,omitempty\""),
+  2: optional string title (go.tag = "bson:\"title,omitempty\""),
+  3: optional list<string> sports (go.tag = "bson:\"sports,omitempty\""),
+  4: optional list<double> center (go.tag = "bson:\"center,omitempty\""),
+  5: optional list<Coordinate> coords (go.tag = "bson:\"coords,omitempty\""),
+  6: optional string description (go.tag = "bson:\"description,omitempty\""),
+  7: optional string cityid (go.tag = "bson:\"cityid,omitempty\""),
+  8: optional string imageid (go.tag = "bson:\"iamgeid,omitempty\""),
 
 }
 
@@ -128,12 +128,13 @@ service AreaSvc {
     //void createArea(1: string title, 2: string description, 3: list<Coordinate> coords);
     void createArea(1: string token, 2:Area area);
     void updateArea(1: string token, 2:Area area);
-
     void deleteArea(1:string token, 2: Area area);
+    Area getAreaById(1:string token, 2: string areaid);
 
-    list<Area> getNearBy(1: Coordinate coordinate, 2: i32 limit);
-    list<Area> getAllAreasInCity(1: string cityid);
-    Area getAreaById(1:string id);
+    list<string> getNearBy(1:string token, 2: Coordinate coordinate, 3: i32 limit);
+
+    list<string> getAllAreasInCity(1: string cityid);
+
 
     //functions for easy retrieval of new areas!
     //i32 countAreasInCity(1: string cityid);

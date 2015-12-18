@@ -26,28 +26,30 @@ func NewAreaHandler(mRepo *repositories.AreaRepository, userR *repositories.User
 
 
 func (ch *AreaHandler) CreateArea(token string, area *services.Area) error {
-	userid, _ := ch.userR.GetUserIdFromToken(token)
-
+	userid, err := ch.userR.GetUserIdFromToken(token)
+	if err != nil {
+		fmt.Println("Create Area - no user")
+		return err
+	}
 	if ch.userR.IsAdmin(userid) {
 		u, _ := uuid.NewV4()
 		id := u.String()
-		centerCoord := &services.Coordinate{
-			Lat: 0.0,
-			Lon: 0.0,
-		}
+		if area.Center == nil {
+			centerCoord := []float64{0.0, 0.0}
 
-		for _, v := range area.Coords {
-			centerCoord.Lat += v.Lat
-			centerCoord.Lon += v.Lon
+			for _, v := range area.Coords {
+				centerCoord[0] += v.Lat
+				centerCoord[1] += v.Lon
+			}
+			centerCoord[0] /= float64(len(area.Coords))
+			centerCoord[1] /= float64(len(area.Coords))
+			area.Center = centerCoord
 		}
-		centerCoord.Lat /= float64(len(area.Coords))
-		centerCoord.Lon /= float64(len(area.Coords))
-		area.Center = centerCoord
 		area.ID = &id
 
-		ch.repo.CreateArea(area)
 
-		return nil
+
+		return ch.repo.CreateArea(area)
 
 	}else {
 		return  nil
@@ -56,21 +58,43 @@ func (ch *AreaHandler) CreateArea(token string, area *services.Area) error {
 
 }
 
-func (ch *AreaHandler) GetAllAreasInCity(areaid string) ([]*services.Area, error) {
-	return ch.repo.GetAllAreasInCity(areaid)
+func (ch *AreaHandler) GetAllAreasInCity(areaid string) ([]string, error) {
+	areas, err := ch.repo.GetAllAreasInCity(areaid)
+
+	if err != nil {
+		return nil, err;
+	}
+
+	sAreas := make([]string, len(areas))
+
+	for i, area := range areas {
+		sAreas[i] = *area.ID
+	}
+	return sAreas, nil
 }
 
-func (ch *AreaHandler) GetAreaById(id string) (*services.Area, error) {
+func (ch *AreaHandler) GetAreaById(token string,id string) (*services.Area, error) {
+	/*_, err := ch.userR.GetUserIdFromToken(token)
+	if err != nil{
+		return nil, err
+	}*/
 	return ch.repo.GetAreaById(id), nil
 }
 
 
 func (ch *AreaHandler) UpdateArea(token string, area *services.Area) error {
-	fmt.Println("tolken " + token)
-	userid, _ := ch.userR.GetUserIdFromToken(token)
-
+	userid, err := ch.userR.GetUserIdFromToken(token)
+	if err != nil {
+		return err
+	}
 	if ch.userR.IsAdmin(userid) {
-		ch.repo.UpdateArea(area)
+		if(area.ID == nil) {
+
+			return ch.CreateArea(token,area)
+		}else{
+			return ch.repo.UpdateArea(area)
+		}
+
 
 	}
 
@@ -90,20 +114,17 @@ func (ch *AreaHandler) DeleteArea(token string, area *services.Area) error {
 
 
 
-func (ch *AreaHandler) GetNearBy(coord *services.Coordinate, limit int32) ([]*services.Area, error) {
+func (ch *AreaHandler) GetNearBy(token string, coord *services.Coordinate, limit int32) ([]string, error) {
 
-	if limit > 100 {
-		limit = 100
+	if limit > 500 {
+		limit = 500
 	}
 
 	areas, _ := ch.repo.GetNearBy(coord.Lon, coord.Lat, limit)
-	sAreas := make([]*services.Area, len(*areas))
+	sAreas := make([]string, len(areas))
 
-	for i, area := range *areas {
-		sAreas[i] = &services.Area{
-			Title: area.Title,
-			ID:    area.ID,
-		}
+	for i, area := range areas {
+		sAreas[i] = *area.ID
 
 	}
 	return sAreas, nil

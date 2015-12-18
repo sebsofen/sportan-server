@@ -75,7 +75,7 @@ func (ch *UserHandler) SetAdmin(token string, userid string) (error) {
 
 func (ch *UserHandler) RequestToken(username string, password string) (*services.Token,error){
 	//create userid
-
+	fmt.Println("USer " + username + " new token required")
 	token, err := ch.repo.CreateTokenForUser(username,ch.repo.HashPw(password))
 	return token, err
 }

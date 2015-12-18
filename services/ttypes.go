@@ -1793,14 +1793,14 @@ func (p *Sport) String() string {
 //  - Cityid
 //  - Imageid
 type Area struct {
-	ID          *string       `thrift:"id,1" db:"id" json:"id,omitempty"`
-	Title       *string       `thrift:"title,2" db:"title" json:"title,omitempty"`
-	Sports      []string      `thrift:"sports,3" db:"sports" json:"sports,omitempty"`
-	Center      *Coordinate   `thrift:"center,4" db:"center" json:"center,omitempty"`
-	Coords      []*Coordinate `thrift:"coords,5" db:"coords" json:"coords,omitempty"`
-	Description *string       `thrift:"description,6" db:"description" json:"description,omitempty"`
-	Cityid      *string       `thrift:"cityid,7" db:"cityid" json:"cityid,omitempty"`
-	Imageid     *string       `thrift:"imageid,8" db:"imageid" json:"imageid,omitempty"`
+	ID          *string       `thrift:"id,1" bson:"areaid,omitempty"`
+	Title       *string       `thrift:"title,2" bson:"title,omitempty"`
+	Sports      []string      `thrift:"sports,3" bson:"sports,omitempty"`
+	Center      []float64     `thrift:"center,4" bson:"center,omitempty"`
+	Coords      []*Coordinate `thrift:"coords,5" bson:"coords,omitempty"`
+	Description *string       `thrift:"description,6" bson:"description,omitempty"`
+	Cityid      *string       `thrift:"cityid,7" bson:"cityid,omitempty"`
+	Imageid     *string       `thrift:"imageid,8" bson:"iamgeid,omitempty"`
 }
 
 func NewArea() *Area {
@@ -1831,12 +1831,9 @@ func (p *Area) GetSports() []string {
 	return p.Sports
 }
 
-var Area_Center_DEFAULT *Coordinate
+var Area_Center_DEFAULT []float64
 
-func (p *Area) GetCenter() *Coordinate {
-	if !p.IsSetCenter() {
-		return Area_Center_DEFAULT
-	}
+func (p *Area) GetCenter() []float64 {
 	return p.Center
 }
 
@@ -2006,9 +2003,23 @@ func (p *Area) ReadField3(iprot thrift.TProtocol) error {
 }
 
 func (p *Area) ReadField4(iprot thrift.TProtocol) error {
-	p.Center = &Coordinate{}
-	if err := p.Center.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Center), err)
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]float64, 0, size)
+	p.Center = tSlice
+	for i := 0; i < size; i++ {
+		var _elem3 float64
+		if v, err := iprot.ReadDouble(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem3 = v
+		}
+		p.Center = append(p.Center, _elem3)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
 	}
 	return nil
 }
@@ -2021,11 +2032,11 @@ func (p *Area) ReadField5(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem3 := &Coordinate{}
-		if err := _elem3.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem3), err)
+		_elem4 := &Coordinate{}
+		if err := _elem4.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
 		}
-		p.Coords = append(p.Coords, _elem3)
+		p.Coords = append(p.Coords, _elem4)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2152,11 +2163,19 @@ func (p *Area) writeField3(oprot thrift.TProtocol) (err error) {
 
 func (p *Area) writeField4(oprot thrift.TProtocol) (err error) {
 	if p.IsSetCenter() {
-		if err := oprot.WriteFieldBegin("center", thrift.STRUCT, 4); err != nil {
+		if err := oprot.WriteFieldBegin("center", thrift.LIST, 4); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:center: ", p), err)
 		}
-		if err := p.Center.Write(oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Center), err)
+		if err := oprot.WriteListBegin(thrift.DOUBLE, len(p.Center)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Center {
+			if err := oprot.WriteDouble(float64(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:center: ", p), err)
@@ -2368,11 +2387,11 @@ func (p *City) ReadField3(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem4 := &Coordinate{}
-		if err := _elem4.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
+		_elem5 := &Coordinate{}
+		if err := _elem5.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
 		}
-		p.Coords = append(p.Coords, _elem4)
+		p.Coords = append(p.Coords, _elem5)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

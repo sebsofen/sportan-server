@@ -220,19 +220,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg76 := flag.Arg(2)
-		mbTrans77 := thrift.NewTMemoryBufferLen(len(arg76))
-		defer mbTrans77.Close()
-		_, err78 := mbTrans77.WriteString(arg76)
-		if err78 != nil {
+		arg77 := flag.Arg(2)
+		mbTrans78 := thrift.NewTMemoryBufferLen(len(arg77))
+		defer mbTrans78.Close()
+		_, err79 := mbTrans78.WriteString(arg77)
+		if err79 != nil {
 			Usage()
 			return
 		}
-		factory79 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt80 := factory79.GetProtocol(mbTrans77)
+		factory80 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt81 := factory80.GetProtocol(mbTrans78)
 		argvalue1 := services.NewProfile()
-		err81 := argvalue1.Read(jsProt80)
-		if err81 != nil {
+		err82 := argvalue1.Read(jsProt81)
+		if err82 != nil {
 			Usage()
 			return
 		}

@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"sportan/databases"
 	"time"
 	"gopkg.in/mgo.v2/bson"
@@ -35,19 +34,21 @@ func (rep *UserRepository) AddUser(uname string, userpassword string) error {
 
 //generate token and set to current token in database
 func (rep *UserRepository) CreateTokenForUser(uname string, hashedpw string) (*services.Token, error) {
-	ts := time.Now().UnixNano()/1e6 + 24*3600*1000
+	var ts int64
+	ts =  24*3600*1000
 	token := randToken()
 	//update token in database for username
 	tokenStruct := &services.Token{
 		Token:    token,
-		Validity: ts,
+		Validity: (time.Now().UnixNano()/1e6 + ts),
 	}
-	fmt.Println(uname)
+
 	type M map[string]interface{}
-
 	err := rep.mongo.Collection.Update(services.User{Identifier: &uname, Password: &hashedpw}, M{"$set": services.User{Token: tokenStruct}})
-
-	return tokenStruct, err
+	return &services.Token{
+		Token:    token,
+		Validity: ts,
+	}, err
 }
 
 
@@ -64,8 +65,7 @@ func (rep *UserRepository) GetUserIdFromToken(token string) (string, error) {
 	err := rep.mongo.Collection.Find(bson.M{"token.token": token}).One(&user)
 	userid := ""
 	if(err != nil){
-		fmt.Println("HEERE KOMMT EIN ERROR")
-		panic(err)
+		return "", err
 	}
 	userid = *user.Identifier
 	return userid, err
