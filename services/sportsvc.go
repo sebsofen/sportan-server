@@ -22,6 +22,10 @@ type SportSvc interface {
 	// Parameters:
 	//  - Bla
 	GetAllSports(bla string) (r []*Sport, err error)
+	// Parameters:
+	//  - Token
+	//  - Sportid
+	GetSportById(token string, sportid string) (r *Sport, err error)
 }
 
 type SportSvcClient struct {
@@ -206,6 +210,85 @@ func (p *SportSvcClient) recvGetAllSports() (value []*Sport, err error) {
 	return
 }
 
+// Parameters:
+//  - Token
+//  - Sportid
+func (p *SportSvcClient) GetSportById(token string, sportid string) (r *Sport, err error) {
+	if err = p.sendGetSportById(token, sportid); err != nil {
+		return
+	}
+	return p.recvGetSportById()
+}
+
+func (p *SportSvcClient) sendGetSportById(token string, sportid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("getSportById", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := SportSvcGetSportByIdArgs{
+		Token:   token,
+		Sportid: sportid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *SportSvcClient) recvGetSportById() (value *Sport, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "getSportById" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getSportById failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getSportById failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error10 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error11 error
+		error11, err = error10.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error11
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getSportById failed: invalid message type")
+		return
+	}
+	result := SportSvcGetSportByIdResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
 type SportSvcProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
 	handler      SportSvc
@@ -226,10 +309,11 @@ func (p *SportSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction 
 
 func NewSportSvcProcessor(handler SportSvc) *SportSvcProcessor {
 
-	self10 := &SportSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self10.processorMap["createSport"] = &sportSvcProcessorCreateSport{handler: handler}
-	self10.processorMap["getAllSports"] = &sportSvcProcessorGetAllSports{handler: handler}
-	return self10
+	self12 := &SportSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self12.processorMap["createSport"] = &sportSvcProcessorCreateSport{handler: handler}
+	self12.processorMap["getAllSports"] = &sportSvcProcessorGetAllSports{handler: handler}
+	self12.processorMap["getSportById"] = &sportSvcProcessorGetSportById{handler: handler}
+	return self12
 }
 
 func (p *SportSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -242,12 +326,12 @@ func (p *SportSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x11 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x13 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x11.Write(oprot)
+	x13.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x11
+	return false, x13
 
 }
 
@@ -330,6 +414,54 @@ func (p *sportSvcProcessorGetAllSports) Process(seqId int32, iprot, oprot thrift
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("getAllSports", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type sportSvcProcessorGetSportById struct {
+	handler SportSvc
+}
+
+func (p *sportSvcProcessorGetSportById) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := SportSvcGetSportByIdArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("getSportById", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := SportSvcGetSportByIdResult{}
+	var retval *Sport
+	var err2 error
+	if retval, err2 = p.handler.GetSportById(args.Token, args.Sportid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getSportById: "+err2.Error())
+		oprot.WriteMessageBegin("getSportById", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("getSportById", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -735,11 +867,11 @@ func (p *SportSvcGetAllSportsResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*Sport, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem12 := &Sport{}
-		if err := _elem12.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem12), err)
+		_elem14 := &Sport{}
+		if err := _elem14.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem14), err)
 		}
-		p.Success = append(p.Success, _elem12)
+		p.Success = append(p.Success, _elem14)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -791,4 +923,231 @@ func (p *SportSvcGetAllSportsResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("SportSvcGetAllSportsResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Sportid
+type SportSvcGetSportByIdArgs struct {
+	Token   string `thrift:"token,1" db:"token" json:"token"`
+	Sportid string `thrift:"sportid,2" db:"sportid" json:"sportid"`
+}
+
+func NewSportSvcGetSportByIdArgs() *SportSvcGetSportByIdArgs {
+	return &SportSvcGetSportByIdArgs{}
+}
+
+func (p *SportSvcGetSportByIdArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *SportSvcGetSportByIdArgs) GetSportid() string {
+	return p.Sportid
+}
+func (p *SportSvcGetSportByIdArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Sportid = v
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getSportById_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *SportSvcGetSportByIdArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("sportid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:sportid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Sportid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.sportid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:sportid: ", p), err)
+	}
+	return err
+}
+
+func (p *SportSvcGetSportByIdArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportSvcGetSportByIdArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type SportSvcGetSportByIdResult struct {
+	Success *Sport `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewSportSvcGetSportByIdResult() *SportSvcGetSportByIdResult {
+	return &SportSvcGetSportByIdResult{}
+}
+
+var SportSvcGetSportByIdResult_Success_DEFAULT *Sport
+
+func (p *SportSvcGetSportByIdResult) GetSuccess() *Sport {
+	if !p.IsSetSuccess() {
+		return SportSvcGetSportByIdResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *SportSvcGetSportByIdResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *SportSvcGetSportByIdResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &Sport{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("getSportById_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportSvcGetSportByIdResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportSvcGetSportByIdResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportSvcGetSportByIdResult(%+v)", *p)
 }

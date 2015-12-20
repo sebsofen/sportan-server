@@ -51,3 +51,14 @@ func (ch *SportHandler) GetAllSports(bla string) ([]*services.Sport, error) {
 	}
 	return sports,nil
 }
+
+func (ch *SportHandler) GetSportById(token string, sportid string) (*services.Sport, error) {
+	_, err := ch.userR.GetUserIdFromToken(token)
+	if err != nil {
+		return nil, err
+	}
+
+	sport := ch.repo.GetSportById(sportid)
+
+	return sport, nil
+}

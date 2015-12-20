@@ -107,16 +107,16 @@ func (p *CitySvcClient) recvCreateCity() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error135 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error136 error
-		error136, err = error135.Read(iprot)
+		error140 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error141 error
+		error141, err = error140.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error136
+		err = error141
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -185,16 +185,16 @@ func (p *CitySvcClient) recvGetNearBy() (value []*City, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error137 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error138 error
-		error138, err = error137.Read(iprot)
+		error142 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error143 error
+		error143, err = error142.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error138
+		err = error143
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -258,16 +258,16 @@ func (p *CitySvcClient) recvGetAllCities() (value []*City, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error139 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error140 error
-		error140, err = error139.Read(iprot)
+		error144 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error145 error
+		error145, err = error144.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error140
+		err = error145
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -305,11 +305,11 @@ func (p *CitySvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewCitySvcProcessor(handler CitySvc) *CitySvcProcessor {
 
-	self141 := &CitySvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self141.processorMap["createCity"] = &citySvcProcessorCreateCity{handler: handler}
-	self141.processorMap["getNearBy"] = &citySvcProcessorGetNearBy{handler: handler}
-	self141.processorMap["getAllCities"] = &citySvcProcessorGetAllCities{handler: handler}
-	return self141
+	self146 := &CitySvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self146.processorMap["createCity"] = &citySvcProcessorCreateCity{handler: handler}
+	self146.processorMap["getNearBy"] = &citySvcProcessorGetNearBy{handler: handler}
+	self146.processorMap["getAllCities"] = &citySvcProcessorGetAllCities{handler: handler}
+	return self146
 }
 
 func (p *CitySvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -322,12 +322,12 @@ func (p *CitySvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x142 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x147 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x142.Write(oprot)
+	x147.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x142
+	return false, x147
 
 }
 
@@ -566,11 +566,11 @@ func (p *CitySvcCreateCityArgs) ReadField3(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem143 := &Coordinate{}
-		if err := _elem143.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem143), err)
+		_elem148 := &Coordinate{}
+		if err := _elem148.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem148), err)
 		}
-		p.Coords = append(p.Coords, _elem143)
+		p.Coords = append(p.Coords, _elem148)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -901,11 +901,11 @@ func (p *CitySvcGetNearByResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*City, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem144 := &City{}
-		if err := _elem144.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem144), err)
+		_elem149 := &City{}
+		if err := _elem149.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem149), err)
 		}
-		p.Success = append(p.Success, _elem144)
+		p.Success = append(p.Success, _elem149)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -1072,11 +1072,11 @@ func (p *CitySvcGetAllCitiesResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*City, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem145 := &City{}
-		if err := _elem145.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem145), err)
+		_elem150 := &City{}
+		if err := _elem150.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem150), err)
 		}
-		p.Success = append(p.Success, _elem145)
+		p.Success = append(p.Success, _elem150)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

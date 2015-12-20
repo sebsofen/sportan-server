@@ -62,14 +62,21 @@ func (ch *UserHandler) SetProfile(token string, profile *services.Profile)(error
 	return err;
 }
 
-func (ch *UserHandler) SetAdmin(token string, userid string) (error) {
-	u, _ := ch.repo.GetUserByToken(token)
-	fmt.Println(u.Role)
-	//TODO CONTINUE HERE:
-	//solve problem: idea is to extend services.user with issuperadmin function like in user_repository
-	//wont be able to create function from outside package..
-	return nil
+func (ch *UserHandler) SetAdmin(token string, userid string, admin bool) (error) {
+	u, err := ch.repo.GetUserByToken(token)
 
+	if err != nil {
+		return err
+	}
+
+	if u.Role != nil && *u.Role == services.ROLE_SUPERADMIN {
+		err := ch.repo.SetAdmin(userid, admin)
+		return err
+	}
+
+
+
+	return errors.New("user is not super admin")
 }
 
 

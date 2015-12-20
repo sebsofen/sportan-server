@@ -103,16 +103,16 @@ func (p *ImageSvcClient) recvGetImageById() (value *Image, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error21 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error22 error
-		error22, err = error21.Read(iprot)
+		error25 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error26 error
+		error26, err = error25.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error22
+		err = error26
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -180,16 +180,16 @@ func (p *ImageSvcClient) recvGetThumbnailByImageId() (value *Image, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error23 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error24 error
-		error24, err = error23.Read(iprot)
+		error27 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error28 error
+		error28, err = error27.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error24
+		err = error28
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -259,16 +259,16 @@ func (p *ImageSvcClient) recvCreateImage() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error25 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error26 error
-		error26, err = error25.Read(iprot)
+		error29 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error30 error
+		error30, err = error29.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error26
+		err = error30
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -306,11 +306,11 @@ func (p *ImageSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction 
 
 func NewImageSvcProcessor(handler ImageSvc) *ImageSvcProcessor {
 
-	self27 := &ImageSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self27.processorMap["getImageById"] = &imageSvcProcessorGetImageById{handler: handler}
-	self27.processorMap["getThumbnailByImageId"] = &imageSvcProcessorGetThumbnailByImageId{handler: handler}
-	self27.processorMap["createImage"] = &imageSvcProcessorCreateImage{handler: handler}
-	return self27
+	self31 := &ImageSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self31.processorMap["getImageById"] = &imageSvcProcessorGetImageById{handler: handler}
+	self31.processorMap["getThumbnailByImageId"] = &imageSvcProcessorGetThumbnailByImageId{handler: handler}
+	self31.processorMap["createImage"] = &imageSvcProcessorCreateImage{handler: handler}
+	return self31
 }
 
 func (p *ImageSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -323,12 +323,12 @@ func (p *ImageSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x28 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x32 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x28.Write(oprot)
+	x32.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x28
+	return false, x32
 
 }
 

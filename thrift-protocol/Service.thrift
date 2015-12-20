@@ -62,10 +62,10 @@ struct Image {
 
 
 struct Sport {
-  1: optional string id,
-  2: optional string name,
-  3: optional Image icon,
-  4: optional string iconid,
+  1: optional string id (go.tag = "bson:\"id,omitempty\""),
+  2: optional string name (go.tag = "bson:\"name,omitempty\""),
+  3: optional Image icon (go.tag = "bson:\"image,omitempty\""),
+  4: optional string iconid (go.tag = "bson:\"imageid,omitempty\""),
 }
 
 struct Area {
@@ -91,6 +91,7 @@ struct City {
 service SportSvc {
   Sport createSport(1:string token, 2: Sport sport);
   list<Sport> getAllSports(1:string bla);
+  Sport getSportById(1: string token, 2: string sportid);
   //Sport getSportB
 }
 
@@ -120,7 +121,8 @@ service UserSvc {
 
 
     Token requestToken(1: string username, 2: string plain_pw);
-    void setAdmin(1: string token, 2: string userid);
+    void setAdmin(1: string token, 2: string userid, 3: bool admin);
+
 
 }
 

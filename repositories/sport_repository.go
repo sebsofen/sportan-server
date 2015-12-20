@@ -4,14 +4,9 @@ import (
 "sportan/services"
 	"github.com/nu7hatch/gouuid"
 	"gopkg.in/mgo.v2/bson"
-	"fmt"
 )
 
-type Sport struct {
-	Name *string `bson:"name,omitempty"`
-	ID	*string `bson:"id,omitempty"`
-	ImageId *string `bson:"imageid,omitempty"`
-}
+
 
 type SportRepository struct {
 	mongo *databases.MongoConfig
@@ -34,12 +29,7 @@ func (rep *SportRepository) CreateSport(sport *services.Sport ) (*services.Sport
 	u, _ := uuid.NewV4()
 	sportId := u.String()
 
-	rep.mongo.Collection.Insert(
-		&Sport {
-			Name : sport.Name,
-			ImageId : sport.Icon.ID,
-			ID : &sportId,
-		})
+	rep.mongo.Collection.Insert(sport)
 
 
 	sport.ID = &sportId
@@ -48,19 +38,13 @@ func (rep *SportRepository) CreateSport(sport *services.Sport ) (*services.Sport
 }
 
 func (rep *SportRepository) GetAllSports() ([]*services.Sport) {
-	var sports []Sport
+	var sports []*services.Sport
 	rep.mongo.Collection.Find(bson.M{}).All(&sports)
+	return sports
+}
 
-	ssports := make([]*services.Sport, len(sports),len(sports))
-
-	for i, sport := range sports {
-		fmt.Println(&sport.ImageId)
-		ssports[i] = &services.Sport{
-			ID: sport.ID,
-			Iconid: sport.ImageId,
-			Name: sport.Name,
-		}
-	}
-
-	return ssports
+func (rep *SportRepository) GetSportById(id string) *services.Sport {
+	var sport *services.Sport
+	rep.mongo.Collection.Find(bson.M{"id": id}).One(&sport)
+	return sport
 }

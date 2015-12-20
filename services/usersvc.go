@@ -56,7 +56,8 @@ type UserSvc interface { //Userrelated stuff (creation etc)
 	// Parameters:
 	//  - Token
 	//  - Userid
-	SetAdmin(token string, userid string) (err error)
+	//  - Admin
+	SetAdmin(token string, userid string, admin bool) (err error)
 }
 
 //Userrelated stuff (creation etc)
@@ -137,16 +138,16 @@ func (p *UserSvcClient) recvCreateUser() (value *UserCredentials, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error38 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error39 error
-		error39, err = error38.Read(iprot)
+		error42 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error43 error
+		error43, err = error42.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error39
+		err = error43
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -218,16 +219,16 @@ func (p *UserSvcClient) recvGetMe() (value *User, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error40 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error41 error
-		error41, err = error40.Read(iprot)
+		error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error45 error
+		error45, err = error44.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error41
+		err = error45
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -297,16 +298,16 @@ func (p *UserSvcClient) recvGetUserById() (value *User, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error42 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error43 error
-		error43, err = error42.Read(iprot)
+		error46 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error47 error
+		error47, err = error46.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error43
+		err = error47
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -374,16 +375,16 @@ func (p *UserSvcClient) recvGetFriends() (value []*User, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error45 error
-		error45, err = error44.Read(iprot)
+		error48 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error49 error
+		error49, err = error48.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error45
+		err = error49
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -451,16 +452,16 @@ func (p *UserSvcClient) recvGetFriendRequests() (value []*User, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error46 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error47 error
-		error47, err = error46.Read(iprot)
+		error50 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error51 error
+		error51, err = error50.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error47
+		err = error51
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -530,16 +531,16 @@ func (p *UserSvcClient) recvAcceptFriendRequest() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error48 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error49 error
-		error49, err = error48.Read(iprot)
+		error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error53 error
+		error53, err = error52.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error49
+		err = error53
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -608,16 +609,16 @@ func (p *UserSvcClient) recvDeclineFriendRequest() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error50 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error51 error
-		error51, err = error50.Read(iprot)
+		error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error55 error
+		error55, err = error54.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error51
+		err = error55
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -686,16 +687,16 @@ func (p *UserSvcClient) recvSendFriendRequest() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error53 error
-		error53, err = error52.Read(iprot)
+		error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error57 error
+		error57, err = error56.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error53
+		err = error57
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -764,16 +765,16 @@ func (p *UserSvcClient) recvSetProfile() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error55 error
-		error55, err = error54.Read(iprot)
+		error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error59 error
+		error59, err = error58.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error55
+		err = error59
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -842,16 +843,16 @@ func (p *UserSvcClient) recvRequestToken() (value *Token, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error57 error
-		error57, err = error56.Read(iprot)
+		error60 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error61 error
+		error61, err = error60.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error57
+		err = error61
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -872,14 +873,15 @@ func (p *UserSvcClient) recvRequestToken() (value *Token, err error) {
 // Parameters:
 //  - Token
 //  - Userid
-func (p *UserSvcClient) SetAdmin(token string, userid string) (err error) {
-	if err = p.sendSetAdmin(token, userid); err != nil {
+//  - Admin
+func (p *UserSvcClient) SetAdmin(token string, userid string, admin bool) (err error) {
+	if err = p.sendSetAdmin(token, userid, admin); err != nil {
 		return
 	}
 	return p.recvSetAdmin()
 }
 
-func (p *UserSvcClient) sendSetAdmin(token string, userid string) (err error) {
+func (p *UserSvcClient) sendSetAdmin(token string, userid string, admin bool) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -892,6 +894,7 @@ func (p *UserSvcClient) sendSetAdmin(token string, userid string) (err error) {
 	args := UserSvcSetAdminArgs{
 		Token:  token,
 		Userid: userid,
+		Admin:  admin,
 	}
 	if err = args.Write(oprot); err != nil {
 		return
@@ -921,16 +924,16 @@ func (p *UserSvcClient) recvSetAdmin() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error59 error
-		error59, err = error58.Read(iprot)
+		error62 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error63 error
+		error63, err = error62.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error59
+		err = error63
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -967,19 +970,19 @@ func (p *UserSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewUserSvcProcessor(handler UserSvc) *UserSvcProcessor {
 
-	self60 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self60.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
-	self60.processorMap["getMe"] = &userSvcProcessorGetMe{handler: handler}
-	self60.processorMap["getUserById"] = &userSvcProcessorGetUserById{handler: handler}
-	self60.processorMap["getFriends"] = &userSvcProcessorGetFriends{handler: handler}
-	self60.processorMap["getFriendRequests"] = &userSvcProcessorGetFriendRequests{handler: handler}
-	self60.processorMap["acceptFriendRequest"] = &userSvcProcessorAcceptFriendRequest{handler: handler}
-	self60.processorMap["declineFriendRequest"] = &userSvcProcessorDeclineFriendRequest{handler: handler}
-	self60.processorMap["sendFriendRequest"] = &userSvcProcessorSendFriendRequest{handler: handler}
-	self60.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
-	self60.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
-	self60.processorMap["setAdmin"] = &userSvcProcessorSetAdmin{handler: handler}
-	return self60
+	self64 := &UserSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self64.processorMap["createUser"] = &userSvcProcessorCreateUser{handler: handler}
+	self64.processorMap["getMe"] = &userSvcProcessorGetMe{handler: handler}
+	self64.processorMap["getUserById"] = &userSvcProcessorGetUserById{handler: handler}
+	self64.processorMap["getFriends"] = &userSvcProcessorGetFriends{handler: handler}
+	self64.processorMap["getFriendRequests"] = &userSvcProcessorGetFriendRequests{handler: handler}
+	self64.processorMap["acceptFriendRequest"] = &userSvcProcessorAcceptFriendRequest{handler: handler}
+	self64.processorMap["declineFriendRequest"] = &userSvcProcessorDeclineFriendRequest{handler: handler}
+	self64.processorMap["sendFriendRequest"] = &userSvcProcessorSendFriendRequest{handler: handler}
+	self64.processorMap["setProfile"] = &userSvcProcessorSetProfile{handler: handler}
+	self64.processorMap["requestToken"] = &userSvcProcessorRequestToken{handler: handler}
+	self64.processorMap["setAdmin"] = &userSvcProcessorSetAdmin{handler: handler}
+	return self64
 }
 
 func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -992,12 +995,12 @@ func (p *UserSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x61 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x65 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x61.Write(oprot)
+	x65.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x61
+	return false, x65
 
 }
 
@@ -1493,7 +1496,7 @@ func (p *userSvcProcessorSetAdmin) Process(seqId int32, iprot, oprot thrift.TPro
 	iprot.ReadMessageEnd()
 	result := UserSvcSetAdminResult{}
 	var err2 error
-	if err2 = p.handler.SetAdmin(args.Token, args.Userid); err2 != nil {
+	if err2 = p.handler.SetAdmin(args.Token, args.Userid, args.Admin); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing setAdmin: "+err2.Error())
 		oprot.WriteMessageBegin("setAdmin", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -2328,11 +2331,11 @@ func (p *UserSvcGetFriendsResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*User, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem62 := &User{}
-		if err := _elem62.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem62), err)
+		_elem66 := &User{}
+		if err := _elem66.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem66), err)
 		}
-		p.Success = append(p.Success, _elem62)
+		p.Success = append(p.Success, _elem66)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2537,11 +2540,11 @@ func (p *UserSvcGetFriendRequestsResult) ReadField0(iprot thrift.TProtocol) erro
 	tSlice := make([]*User, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem63 := &User{}
-		if err := _elem63.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem63), err)
+		_elem67 := &User{}
+		if err := _elem67.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem67), err)
 		}
-		p.Success = append(p.Success, _elem63)
+		p.Success = append(p.Success, _elem67)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -3549,9 +3552,11 @@ func (p *UserSvcRequestTokenResult) String() string {
 // Attributes:
 //  - Token
 //  - Userid
+//  - Admin
 type UserSvcSetAdminArgs struct {
 	Token  string `thrift:"token,1" db:"token" json:"token"`
 	Userid string `thrift:"userid,2" db:"userid" json:"userid"`
+	Admin  bool   `thrift:"admin,3" db:"admin" json:"admin"`
 }
 
 func NewUserSvcSetAdminArgs() *UserSvcSetAdminArgs {
@@ -3564,6 +3569,10 @@ func (p *UserSvcSetAdminArgs) GetToken() string {
 
 func (p *UserSvcSetAdminArgs) GetUserid() string {
 	return p.Userid
+}
+
+func (p *UserSvcSetAdminArgs) GetAdmin() bool {
+	return p.Admin
 }
 func (p *UserSvcSetAdminArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
@@ -3585,6 +3594,10 @@ func (p *UserSvcSetAdminArgs) Read(iprot thrift.TProtocol) error {
 			}
 		case 2:
 			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.ReadField3(iprot); err != nil {
 				return err
 			}
 		default:
@@ -3620,6 +3633,15 @@ func (p *UserSvcSetAdminArgs) ReadField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *UserSvcSetAdminArgs) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Admin = v
+	}
+	return nil
+}
+
 func (p *UserSvcSetAdminArgs) Write(oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin("setAdmin_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
@@ -3628,6 +3650,9 @@ func (p *UserSvcSetAdminArgs) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -3661,6 +3686,19 @@ func (p *UserSvcSetAdminArgs) writeField2(oprot thrift.TProtocol) (err error) {
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:userid: ", p), err)
+	}
+	return err
+}
+
+func (p *UserSvcSetAdminArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("admin", thrift.BOOL, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:admin: ", p), err)
+	}
+	if err := oprot.WriteBool(bool(p.Admin)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.admin (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:admin: ", p), err)
 	}
 	return err
 }

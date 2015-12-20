@@ -143,8 +143,17 @@ func (rep *UserRepository) IsSuper(userid string) bool {
 	return false
 }
 
-func (rep *UserRepository) SetAdmin(userid string) {
-
+//Set user to admin (or reset)
+func (rep *UserRepository) SetAdmin(userid string, admin bool) error{
+	if admin {
+		admstr := services.ROLE_ADMIN
+		err := rep.mongo.Collection.Update(services.User{Identifier: &userid}, bson.M{"$set": services.User{Role: &admstr}})
+		return err
+	}else {
+		norole := ""
+		err := rep.mongo.Collection.Update(services.User{Identifier: &userid}, bson.M{"$set": services.User{Role: &norole}})
+		return err
+	}
 }
 
 

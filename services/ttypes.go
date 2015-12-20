@@ -1550,10 +1550,10 @@ func (p *Image) String() string {
 //  - Icon
 //  - Iconid
 type Sport struct {
-	ID     *string `thrift:"id,1" db:"id" json:"id,omitempty"`
-	Name   *string `thrift:"name,2" db:"name" json:"name,omitempty"`
-	Icon   *Image  `thrift:"icon,3" db:"icon" json:"icon,omitempty"`
-	Iconid *string `thrift:"iconid,4" db:"iconid" json:"iconid,omitempty"`
+	ID     *string `thrift:"id,1" bson:"id,omitempty"`
+	Name   *string `thrift:"name,2" bson:"name,omitempty"`
+	Icon   *Image  `thrift:"icon,3" bson:"image,omitempty"`
+	Iconid *string `thrift:"iconid,4" bson:"imageid,omitempty"`
 }
 
 func NewSport() *Sport {

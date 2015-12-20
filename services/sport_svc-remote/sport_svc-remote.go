@@ -22,6 +22,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  Sport createSport(string token, Sport sport)")
 	fmt.Fprintln(os.Stderr, "   getAllSports(string bla)")
+	fmt.Fprintln(os.Stderr, "  Sport getSportById(string token, string sportid)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -123,19 +124,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg14 := flag.Arg(2)
-		mbTrans15 := thrift.NewTMemoryBufferLen(len(arg14))
-		defer mbTrans15.Close()
-		_, err16 := mbTrans15.WriteString(arg14)
-		if err16 != nil {
+		arg16 := flag.Arg(2)
+		mbTrans17 := thrift.NewTMemoryBufferLen(len(arg16))
+		defer mbTrans17.Close()
+		_, err18 := mbTrans17.WriteString(arg16)
+		if err18 != nil {
 			Usage()
 			return
 		}
-		factory17 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt18 := factory17.GetProtocol(mbTrans15)
+		factory19 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt20 := factory19.GetProtocol(mbTrans17)
 		argvalue1 := services.NewSport()
-		err19 := argvalue1.Read(jsProt18)
-		if err19 != nil {
+		err21 := argvalue1.Read(jsProt20)
+		if err21 != nil {
 			Usage()
 			return
 		}
@@ -151,6 +152,18 @@ func main() {
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		fmt.Print(client.GetAllSports(value0))
+		fmt.Print("\n")
+		break
+	case "getSportById":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetSportById requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.GetSportById(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":

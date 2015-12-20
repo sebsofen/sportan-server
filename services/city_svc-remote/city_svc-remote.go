@@ -126,19 +126,19 @@ func main() {
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		arg148 := flag.Arg(3)
-		mbTrans149 := thrift.NewTMemoryBufferLen(len(arg148))
-		defer mbTrans149.Close()
-		_, err150 := mbTrans149.WriteString(arg148)
-		if err150 != nil {
+		arg153 := flag.Arg(3)
+		mbTrans154 := thrift.NewTMemoryBufferLen(len(arg153))
+		defer mbTrans154.Close()
+		_, err155 := mbTrans154.WriteString(arg153)
+		if err155 != nil {
 			Usage()
 			return
 		}
-		factory151 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt152 := factory151.GetProtocol(mbTrans149)
+		factory156 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt157 := factory156.GetProtocol(mbTrans154)
 		containerStruct2 := services.NewCitySvcCreateCityArgs()
-		err153 := containerStruct2.ReadField3(jsProt152)
-		if err153 != nil {
+		err158 := containerStruct2.ReadField3(jsProt157)
+		if err158 != nil {
 			Usage()
 			return
 		}
@@ -152,25 +152,25 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetNearBy requires 2 args")
 			flag.Usage()
 		}
-		arg154 := flag.Arg(1)
-		mbTrans155 := thrift.NewTMemoryBufferLen(len(arg154))
-		defer mbTrans155.Close()
-		_, err156 := mbTrans155.WriteString(arg154)
-		if err156 != nil {
+		arg159 := flag.Arg(1)
+		mbTrans160 := thrift.NewTMemoryBufferLen(len(arg159))
+		defer mbTrans160.Close()
+		_, err161 := mbTrans160.WriteString(arg159)
+		if err161 != nil {
 			Usage()
 			return
 		}
-		factory157 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt158 := factory157.GetProtocol(mbTrans155)
+		factory162 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt163 := factory162.GetProtocol(mbTrans160)
 		argvalue0 := services.NewCoordinate()
-		err159 := argvalue0.Read(jsProt158)
-		if err159 != nil {
+		err164 := argvalue0.Read(jsProt163)
+		if err164 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		tmp1, err160 := (strconv.Atoi(flag.Arg(2)))
-		if err160 != nil {
+		tmp1, err165 := (strconv.Atoi(flag.Arg(2)))
+		if err165 != nil {
 			Usage()
 			return
 		}
