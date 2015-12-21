@@ -174,7 +174,7 @@ func (ch *UserHandler) SendFriendRequest(token string, userid string) error {
 		}
 	}
 
-	return ch.repo.PutFriendRequest(receiverid, userid)
+	return ch.repo.PutFriendRequest(userid, receiverid)
 
 }
 
