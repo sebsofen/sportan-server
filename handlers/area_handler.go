@@ -38,8 +38,8 @@ func (ch *AreaHandler) CreateArea(token string, area *services.Area) error {
 			centerCoord := []float64{0.0, 0.0}
 
 			for _, v := range area.Coords {
-				centerCoord[0] += v.Lat
-				centerCoord[1] += v.Lon
+				centerCoord[1] += v.Lat
+				centerCoord[0] += v.Lon
 			}
 			centerCoord[0] /= float64(len(area.Coords))
 			centerCoord[1] /= float64(len(area.Coords))
