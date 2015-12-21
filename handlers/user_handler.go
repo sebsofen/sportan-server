@@ -121,6 +121,7 @@ func (ch *UserHandler) AcceptFriendRequest(token string, userid string) error {
 	for _, friendrequest := range receiverUser.Friendrequests {
 		if friendrequest == userid {
 			ch.repo.PutFriend(receiverid,userid)
+			ch.repo.PutFriend(userid,receiverid)
 			ch.repo.RemoveFriendRequest(receiverid,userid)
 			return nil
 		}
