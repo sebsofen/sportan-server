@@ -26,6 +26,10 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Area getAreaById(string token, string areaid)")
 	fmt.Fprintln(os.Stderr, "   getNearBy(string token, Coordinate coordinate, i32 limit)")
 	fmt.Fprintln(os.Stderr, "   getAllAreasInCity(string cityid)")
+	fmt.Fprintln(os.Stderr, "  void beenHere(string token, string areaid, i64 date)")
+	fmt.Fprintln(os.Stderr, "  i64 timesBeenHere(string token, string areaid)")
+	fmt.Fprintln(os.Stderr, "  i64 lastTimeBeenHere(string token, string areaid)")
+	fmt.Fprintln(os.Stderr, "  i64 timesVisited(string token, string areaid, i64 timeinpast)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -127,19 +131,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg109 := flag.Arg(2)
-		mbTrans110 := thrift.NewTMemoryBufferLen(len(arg109))
-		defer mbTrans110.Close()
-		_, err111 := mbTrans110.WriteString(arg109)
-		if err111 != nil {
+		arg119 := flag.Arg(2)
+		mbTrans120 := thrift.NewTMemoryBufferLen(len(arg119))
+		defer mbTrans120.Close()
+		_, err121 := mbTrans120.WriteString(arg119)
+		if err121 != nil {
 			Usage()
 			return
 		}
-		factory112 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt113 := factory112.GetProtocol(mbTrans110)
+		factory122 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt123 := factory122.GetProtocol(mbTrans120)
 		argvalue1 := services.NewArea()
-		err114 := argvalue1.Read(jsProt113)
-		if err114 != nil {
+		err124 := argvalue1.Read(jsProt123)
+		if err124 != nil {
 			Usage()
 			return
 		}
@@ -154,19 +158,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg116 := flag.Arg(2)
-		mbTrans117 := thrift.NewTMemoryBufferLen(len(arg116))
-		defer mbTrans117.Close()
-		_, err118 := mbTrans117.WriteString(arg116)
-		if err118 != nil {
+		arg126 := flag.Arg(2)
+		mbTrans127 := thrift.NewTMemoryBufferLen(len(arg126))
+		defer mbTrans127.Close()
+		_, err128 := mbTrans127.WriteString(arg126)
+		if err128 != nil {
 			Usage()
 			return
 		}
-		factory119 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt120 := factory119.GetProtocol(mbTrans117)
+		factory129 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt130 := factory129.GetProtocol(mbTrans127)
 		argvalue1 := services.NewArea()
-		err121 := argvalue1.Read(jsProt120)
-		if err121 != nil {
+		err131 := argvalue1.Read(jsProt130)
+		if err131 != nil {
 			Usage()
 			return
 		}
@@ -181,19 +185,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg123 := flag.Arg(2)
-		mbTrans124 := thrift.NewTMemoryBufferLen(len(arg123))
-		defer mbTrans124.Close()
-		_, err125 := mbTrans124.WriteString(arg123)
-		if err125 != nil {
+		arg133 := flag.Arg(2)
+		mbTrans134 := thrift.NewTMemoryBufferLen(len(arg133))
+		defer mbTrans134.Close()
+		_, err135 := mbTrans134.WriteString(arg133)
+		if err135 != nil {
 			Usage()
 			return
 		}
-		factory126 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt127 := factory126.GetProtocol(mbTrans124)
+		factory136 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt137 := factory136.GetProtocol(mbTrans134)
 		argvalue1 := services.NewArea()
-		err128 := argvalue1.Read(jsProt127)
-		if err128 != nil {
+		err138 := argvalue1.Read(jsProt137)
+		if err138 != nil {
 			Usage()
 			return
 		}
@@ -220,25 +224,25 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg132 := flag.Arg(2)
-		mbTrans133 := thrift.NewTMemoryBufferLen(len(arg132))
-		defer mbTrans133.Close()
-		_, err134 := mbTrans133.WriteString(arg132)
-		if err134 != nil {
+		arg142 := flag.Arg(2)
+		mbTrans143 := thrift.NewTMemoryBufferLen(len(arg142))
+		defer mbTrans143.Close()
+		_, err144 := mbTrans143.WriteString(arg142)
+		if err144 != nil {
 			Usage()
 			return
 		}
-		factory135 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt136 := factory135.GetProtocol(mbTrans133)
+		factory145 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt146 := factory145.GetProtocol(mbTrans143)
 		argvalue1 := services.NewCoordinate()
-		err137 := argvalue1.Read(jsProt136)
-		if err137 != nil {
+		err147 := argvalue1.Read(jsProt146)
+		if err147 != nil {
 			Usage()
 			return
 		}
 		value1 := argvalue1
-		tmp2, err138 := (strconv.Atoi(flag.Arg(3)))
-		if err138 != nil {
+		tmp2, err148 := (strconv.Atoi(flag.Arg(3)))
+		if err148 != nil {
 			Usage()
 			return
 		}
@@ -255,6 +259,66 @@ func main() {
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		fmt.Print(client.GetAllAreasInCity(value0))
+		fmt.Print("\n")
+		break
+	case "beenHere":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "BeenHere requires 3 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		argvalue2, err152 := (strconv.ParseInt(flag.Arg(3), 10, 64))
+		if err152 != nil {
+			Usage()
+			return
+		}
+		value2 := argvalue2
+		fmt.Print(client.BeenHere(value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "timesBeenHere":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "TimesBeenHere requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.TimesBeenHere(value0, value1))
+		fmt.Print("\n")
+		break
+	case "lastTimeBeenHere":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "LastTimeBeenHere requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.LastTimeBeenHere(value0, value1))
+		fmt.Print("\n")
+		break
+	case "timesVisited":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "TimesVisited requires 3 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		argvalue2, err159 := (strconv.ParseInt(flag.Arg(3), 10, 64))
+		if err159 != nil {
+			Usage()
+			return
+		}
+		value2 := argvalue2
+		fmt.Print(client.TimesVisited(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":

@@ -43,6 +43,7 @@ struct User {
     5: optional Token token (go.tag = "bson:\"token,omitempty\""),
     6: optional list<string> friends (go.tag = "bson:\"friends,omitempty\""),
     7: optional list<string> friendrequests (go.tag = "bson:\"friendrequests,omitempty\""),
+    8: optional map<i64,string> areasvisits (go.tag = "bson:\"areasvisits,omitempty\""),
 
 }
 
@@ -141,6 +142,10 @@ service AreaSvc {
     //functions for easy retrieval of new areas!
     //i32 countAreasInCity(1: string cityid);
     //list<Area> getBatchAreasInCity(1: string cityid, i32 offset, i32 limit);
+    void beenHere(1: string token, 2: string areaid, 3: i64 date);
+    i64 timesBeenHere(1: string token, 2: string areaid);
+    i64 lastTimeBeenHere(1: string token, 2: string areaid);
+    i64 timesVisited(1: string token, 2: string areaid, 3: i64 timeinpast);
 
 }
 

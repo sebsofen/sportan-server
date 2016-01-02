@@ -7,6 +7,7 @@ import (
 
 	"github.com/nu7hatch/gouuid"
 	"fmt"
+	"errors"
 )
 
 type AreaHandler struct {
@@ -129,4 +130,43 @@ func (ch *AreaHandler) GetNearBy(token string, coord *services.Coordinate, limit
 	}
 	return sAreas, nil
 
+}
+
+//TODO IMPLEMENTATION
+func (ch *AreaHandler) BeenHere(token string, areaid string, date int64) (error) {
+	userid, err := ch.userR.GetUserIdFromToken(token)
+
+	if err != nil {
+		return err
+	}
+
+	area := ch.repo.GetAreaById(areaid)
+
+	if area == nil {
+		return errors.New("areaid does not exist")
+	}
+
+
+	//insert new information in area!
+	return ch.repo.BeenHere(userid,areaid, date)
+
+
+
+	return nil
+}
+
+//TODO IMPLEMENTATION
+
+func (ch *AreaHandler) TimesBeenHere(token string, areaid string) (int64, error) {
+	return 10, nil
+}
+
+//TODO IMPLEMENTATION
+func (ch *AreaHandler) LastTimeBeenHere(token string, areaid string) (int64, error) {
+	return 10, nil
+}
+
+//TODO IMPLEMENTATION
+func (ch *AreaHandler) TimesVisited(token string, areaid string, timeinpast int64) (int64, error) {
+	return 10, nil
 }
