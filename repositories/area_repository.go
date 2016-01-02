@@ -4,13 +4,9 @@ import (
 
 	"sportan/databases"
 	"sportan/services"
-
 	"gopkg.in/mgo.v2/bson"
-
-
 	"gopkg.in/mgo.v2"
 	"fmt"
-	"strconv"
 )
 
 
@@ -62,11 +58,7 @@ func (rep *AreaRepository) GetAllAreasInCity(cityid string) ([]*services.Area,er
 	return areas, nil
 }
 
-func (rep *AreaRepository) BeenHere(userid string, areaid string, date int64) error {
-	return rep.mongo.Collection.Update(bson.M{"username" : userid},
-		bson.M{"$push": bson.M{"areasvisits": bson.M{strconv.FormatInt(date,10) : areaid}}})
 
-}
 
 
 

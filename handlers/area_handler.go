@@ -115,7 +115,6 @@ func (ch *AreaHandler) DeleteArea(token string, area *services.Area) error {
 
 func (ch *AreaHandler) WasHere(token string, areaid string, date int64) error {
 	userid, err := ch.userR.GetUserIdFromToken(token)
-
 	if err != nil {
 		return err
 	}
@@ -123,8 +122,13 @@ func (ch *AreaHandler) WasHere(token string, areaid string, date int64) error {
 	if area == nil {
 		return errors.New("areaid does not exist")
 	}
+	err = ch.userR.WasHere(userid,areaid, date)
 
-	return ch.repo.BeenHere(userid,areaid, date)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return nil
 }
 
 func (ch *AreaHandler) GetNearBy(token string, coord *services.Coordinate, limit int32) ([]string, error) {

@@ -9,6 +9,7 @@ import (
 	"time"
 	"gopkg.in/mgo.v2/bson"
 	"sportan/services"
+	"strconv"
 )
 
 type UserRepository struct {
@@ -142,6 +143,14 @@ func (rep *UserRepository) IsSuper(userid string) bool {
 	}
 	return false
 }
+
+func (rep *UserRepository) WasHere(userid string, areaid string, date int64) error {
+	err := rep.mongo.Collection.Update(
+		bson.M{"username" : userid},
+		bson.M{"$addToSet": bson.M{"areasvisits": bson.M{strconv.FormatInt(date,10) : areaid}}})
+	return err
+}
+
 
 //Set user to admin (or reset)
 func (rep *UserRepository) SetAdmin(userid string, admin bool) error{
