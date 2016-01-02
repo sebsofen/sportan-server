@@ -24,7 +24,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  void updateArea(string token, Area area)")
 	fmt.Fprintln(os.Stderr, "  void deleteArea(string token, Area area)")
 	fmt.Fprintln(os.Stderr, "  Area getAreaById(string token, string areaid)")
-	fmt.Fprintln(os.Stderr, "  void beenHere(string token, string areaid, i64 date)")
+	fmt.Fprintln(os.Stderr, "  void wasHere(string token, string areaid, i64 date)")
 	fmt.Fprintln(os.Stderr, "   getNearBy(string token, Coordinate coordinate, i32 limit)")
 	fmt.Fprintln(os.Stderr, "   getAllAreasInCity(string cityid)")
 	fmt.Fprintln(os.Stderr)
@@ -214,9 +214,9 @@ func main() {
 		fmt.Print(client.GetAreaById(value0, value1))
 		fmt.Print("\n")
 		break
-	case "beenHere":
+	case "wasHere":
 		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "BeenHere requires 3 args")
+			fmt.Fprintln(os.Stderr, "WasHere requires 3 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
@@ -229,7 +229,7 @@ func main() {
 			return
 		}
 		value2 := argvalue2
-		fmt.Print(client.BeenHere(value0, value1, value2))
+		fmt.Print(client.WasHere(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "getNearBy":

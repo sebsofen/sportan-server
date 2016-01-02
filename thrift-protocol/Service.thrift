@@ -133,7 +133,7 @@ service AreaSvc {
     void updateArea(1: string token, 2:Area area);
     void deleteArea(1:string token, 2: Area area);
     Area getAreaById(1:string token, 2: string areaid);
-    void beenHere(1: string token, 2: string areaid, 3: i64 date);
+    void wasHere(1: string token, 2: string areaid, 3: i64 date);
 
     list<string> getNearBy(1:string token, 2: Coordinate coordinate, 3: i32 limit);
 

@@ -35,7 +35,7 @@ type AreaSvc interface {
 	//  - Token
 	//  - Areaid
 	//  - Date
-	BeenHere(token string, areaid string, date int64) (err error)
+	WasHere(token string, areaid string, date int64) (err error)
 	// Parameters:
 	//  - Token
 	//  - Coordinate
@@ -389,24 +389,24 @@ func (p *AreaSvcClient) recvGetAreaById() (value *Area, err error) {
 //  - Token
 //  - Areaid
 //  - Date
-func (p *AreaSvcClient) BeenHere(token string, areaid string, date int64) (err error) {
-	if err = p.sendBeenHere(token, areaid, date); err != nil {
+func (p *AreaSvcClient) WasHere(token string, areaid string, date int64) (err error) {
+	if err = p.sendWasHere(token, areaid, date); err != nil {
 		return
 	}
-	return p.recvBeenHere()
+	return p.recvWasHere()
 }
 
-func (p *AreaSvcClient) sendBeenHere(token string, areaid string, date int64) (err error) {
+func (p *AreaSvcClient) sendWasHere(token string, areaid string, date int64) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
 		p.OutputProtocol = oprot
 	}
 	p.SeqId++
-	if err = oprot.WriteMessageBegin("beenHere", thrift.CALL, p.SeqId); err != nil {
+	if err = oprot.WriteMessageBegin("wasHere", thrift.CALL, p.SeqId); err != nil {
 		return
 	}
-	args := AreaSvcBeenHereArgs{
+	args := AreaSvcWasHereArgs{
 		Token:  token,
 		Areaid: areaid,
 		Date:   date,
@@ -420,7 +420,7 @@ func (p *AreaSvcClient) sendBeenHere(token string, areaid string, date int64) (e
 	return oprot.Flush()
 }
 
-func (p *AreaSvcClient) recvBeenHere() (err error) {
+func (p *AreaSvcClient) recvWasHere() (err error) {
 	iprot := p.InputProtocol
 	if iprot == nil {
 		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -430,12 +430,12 @@ func (p *AreaSvcClient) recvBeenHere() (err error) {
 	if err != nil {
 		return
 	}
-	if method != "beenHere" {
-		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "beenHere failed: wrong method name")
+	if method != "wasHere" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "wasHere failed: wrong method name")
 		return
 	}
 	if p.SeqId != seqId {
-		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "beenHere failed: out of sequence response")
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "wasHere failed: out of sequence response")
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
@@ -452,10 +452,10 @@ func (p *AreaSvcClient) recvBeenHere() (err error) {
 		return
 	}
 	if mTypeId != thrift.REPLY {
-		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "beenHere failed: invalid message type")
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "wasHere failed: invalid message type")
 		return
 	}
-	result := AreaSvcBeenHereResult{}
+	result := AreaSvcWasHereResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -648,7 +648,7 @@ func NewAreaSvcProcessor(handler AreaSvc) *AreaSvcProcessor {
 	self108.processorMap["updateArea"] = &areaSvcProcessorUpdateArea{handler: handler}
 	self108.processorMap["deleteArea"] = &areaSvcProcessorDeleteArea{handler: handler}
 	self108.processorMap["getAreaById"] = &areaSvcProcessorGetAreaById{handler: handler}
-	self108.processorMap["beenHere"] = &areaSvcProcessorBeenHere{handler: handler}
+	self108.processorMap["wasHere"] = &areaSvcProcessorWasHere{handler: handler}
 	self108.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
 	self108.processorMap["getAllAreasInCity"] = &areaSvcProcessorGetAllAreasInCity{handler: handler}
 	return self108
@@ -856,16 +856,16 @@ func (p *areaSvcProcessorGetAreaById) Process(seqId int32, iprot, oprot thrift.T
 	return true, err
 }
 
-type areaSvcProcessorBeenHere struct {
+type areaSvcProcessorWasHere struct {
 	handler AreaSvc
 }
 
-func (p *areaSvcProcessorBeenHere) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := AreaSvcBeenHereArgs{}
+func (p *areaSvcProcessorWasHere) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := AreaSvcWasHereArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("beenHere", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("wasHere", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush()
@@ -873,17 +873,17 @@ func (p *areaSvcProcessorBeenHere) Process(seqId int32, iprot, oprot thrift.TPro
 	}
 
 	iprot.ReadMessageEnd()
-	result := AreaSvcBeenHereResult{}
+	result := AreaSvcWasHereResult{}
 	var err2 error
-	if err2 = p.handler.BeenHere(args.Token, args.Areaid, args.Date); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing beenHere: "+err2.Error())
-		oprot.WriteMessageBegin("beenHere", thrift.EXCEPTION, seqId)
+	if err2 = p.handler.WasHere(args.Token, args.Areaid, args.Date); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing wasHere: "+err2.Error())
+		oprot.WriteMessageBegin("wasHere", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush()
 		return true, err2
 	}
-	if err2 = oprot.WriteMessageBegin("beenHere", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("wasHere", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1791,28 +1791,28 @@ func (p *AreaSvcGetAreaByIdResult) String() string {
 //  - Token
 //  - Areaid
 //  - Date
-type AreaSvcBeenHereArgs struct {
+type AreaSvcWasHereArgs struct {
 	Token  string `thrift:"token,1" db:"token" json:"token"`
 	Areaid string `thrift:"areaid,2" db:"areaid" json:"areaid"`
 	Date   int64  `thrift:"date,3" db:"date" json:"date"`
 }
 
-func NewAreaSvcBeenHereArgs() *AreaSvcBeenHereArgs {
-	return &AreaSvcBeenHereArgs{}
+func NewAreaSvcWasHereArgs() *AreaSvcWasHereArgs {
+	return &AreaSvcWasHereArgs{}
 }
 
-func (p *AreaSvcBeenHereArgs) GetToken() string {
+func (p *AreaSvcWasHereArgs) GetToken() string {
 	return p.Token
 }
 
-func (p *AreaSvcBeenHereArgs) GetAreaid() string {
+func (p *AreaSvcWasHereArgs) GetAreaid() string {
 	return p.Areaid
 }
 
-func (p *AreaSvcBeenHereArgs) GetDate() int64 {
+func (p *AreaSvcWasHereArgs) GetDate() int64 {
 	return p.Date
 }
-func (p *AreaSvcBeenHereArgs) Read(iprot thrift.TProtocol) error {
+func (p *AreaSvcWasHereArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -1853,7 +1853,7 @@ func (p *AreaSvcBeenHereArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *AreaSvcWasHereArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -1862,7 +1862,7 @@ func (p *AreaSvcBeenHereArgs) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereArgs) ReadField2(iprot thrift.TProtocol) error {
+func (p *AreaSvcWasHereArgs) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -1871,7 +1871,7 @@ func (p *AreaSvcBeenHereArgs) ReadField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereArgs) ReadField3(iprot thrift.TProtocol) error {
+func (p *AreaSvcWasHereArgs) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
@@ -1880,8 +1880,8 @@ func (p *AreaSvcBeenHereArgs) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("beenHere_args"); err != nil {
+func (p *AreaSvcWasHereArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("wasHere_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if err := p.writeField1(oprot); err != nil {
@@ -1902,7 +1902,7 @@ func (p *AreaSvcBeenHereArgs) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *AreaSvcWasHereArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
 	}
@@ -1915,7 +1915,7 @@ func (p *AreaSvcBeenHereArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
-func (p *AreaSvcBeenHereArgs) writeField2(oprot thrift.TProtocol) (err error) {
+func (p *AreaSvcWasHereArgs) writeField2(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("areaid", thrift.STRING, 2); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:areaid: ", p), err)
 	}
@@ -1928,7 +1928,7 @@ func (p *AreaSvcBeenHereArgs) writeField2(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
-func (p *AreaSvcBeenHereArgs) writeField3(oprot thrift.TProtocol) (err error) {
+func (p *AreaSvcWasHereArgs) writeField3(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("date", thrift.I64, 3); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:date: ", p), err)
 	}
@@ -1941,21 +1941,21 @@ func (p *AreaSvcBeenHereArgs) writeField3(oprot thrift.TProtocol) (err error) {
 	return err
 }
 
-func (p *AreaSvcBeenHereArgs) String() string {
+func (p *AreaSvcWasHereArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("AreaSvcBeenHereArgs(%+v)", *p)
+	return fmt.Sprintf("AreaSvcWasHereArgs(%+v)", *p)
 }
 
-type AreaSvcBeenHereResult struct {
+type AreaSvcWasHereResult struct {
 }
 
-func NewAreaSvcBeenHereResult() *AreaSvcBeenHereResult {
-	return &AreaSvcBeenHereResult{}
+func NewAreaSvcWasHereResult() *AreaSvcWasHereResult {
+	return &AreaSvcWasHereResult{}
 }
 
-func (p *AreaSvcBeenHereResult) Read(iprot thrift.TProtocol) error {
+func (p *AreaSvcWasHereResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -1981,8 +1981,8 @@ func (p *AreaSvcBeenHereResult) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("beenHere_result"); err != nil {
+func (p *AreaSvcWasHereResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("wasHere_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -1994,11 +1994,11 @@ func (p *AreaSvcBeenHereResult) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *AreaSvcBeenHereResult) String() string {
+func (p *AreaSvcWasHereResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("AreaSvcBeenHereResult(%+v)", *p)
+	return fmt.Sprintf("AreaSvcWasHereResult(%+v)", *p)
 }
 
 // Attributes:
