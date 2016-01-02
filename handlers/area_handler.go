@@ -113,7 +113,7 @@ func (ch *AreaHandler) DeleteArea(token string, area *services.Area) error {
 	return nil
 }
 
-func (ch *AreaHandler) WasHere(token string, areaid string, date int64) (error) {
+func (ch *AreaHandler) WasHere(token string, areaid string, date int64) error {
 	userid, err := ch.userR.GetUserIdFromToken(token)
 
 	if err != nil {
