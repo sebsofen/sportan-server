@@ -132,7 +132,7 @@ func (ch *AreaHandler) GetNearBy(token string, coord *services.Coordinate, limit
 
 }
 
-//TODO IMPLEMENTATION
+
 func (ch *AreaHandler) BeenHere(token string, areaid string, date int64) (error) {
 	userid, err := ch.userR.GetUserIdFromToken(token)
 
