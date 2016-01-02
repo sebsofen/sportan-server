@@ -155,6 +155,7 @@ func (ch *AreaHandler) BeenHere(token string, areaid string, date int64) (error)
 	return nil
 }
 
+/*
 //TODO IMPLEMENTATION
 
 func (ch *AreaHandler) TimesBeenHere(token string, areaid string) (int64, error) {
@@ -170,3 +171,4 @@ func (ch *AreaHandler) LastTimeBeenHere(token string, areaid string) (int64, err
 func (ch *AreaHandler) TimesVisited(token string, areaid string, timeinpast int64) (int64, error) {
 	return 10, nil
 }
+*/

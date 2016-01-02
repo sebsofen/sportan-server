@@ -133,19 +133,16 @@ service AreaSvc {
     void updateArea(1: string token, 2:Area area);
     void deleteArea(1:string token, 2: Area area);
     Area getAreaById(1:string token, 2: string areaid);
+    void beenHere(1: string token, 2: string areaid, 3: i64 date);
 
     list<string> getNearBy(1:string token, 2: Coordinate coordinate, 3: i32 limit);
 
     list<string> getAllAreasInCity(1: string cityid);
 
 
-    //functions for easy retrieval of new areas!
-    //i32 countAreasInCity(1: string cityid);
-    //list<Area> getBatchAreasInCity(1: string cityid, i32 offset, i32 limit);
-    void beenHere(1: string token, 2: string areaid, 3: i64 date);
-    i64 timesBeenHere(1: string token, 2: string areaid);
-    i64 lastTimeBeenHere(1: string token, 2: string areaid);
-    i64 timesVisited(1: string token, 2: string areaid, 3: i64 timeinpast);
+    //i64 timesBeenHere(1: string token, 2: string areaid);
+    //i64 lastTimeBeenHere(1: string token, 2: string areaid);
+    //i64 timesVisited(1: string token, 2: string areaid, 3: i64 timeinpast);
 
 }
 
