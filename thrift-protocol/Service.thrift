@@ -44,7 +44,6 @@ struct User {
     6: optional list<string> friends (go.tag = "bson:\"friends,omitempty\""),
     7: optional list<string> friendrequests (go.tag = "bson:\"friendrequests,omitempty\""),
     8: optional map<i64,string> areasvisits (go.tag = "bson:\"areasvisits,omitempty\""),
-
 }
 
 
@@ -78,7 +77,13 @@ struct Area {
   6: optional string description (go.tag = "bson:\"description,omitempty\""),
   7: optional string cityid (go.tag = "bson:\"cityid,omitempty\""),
   8: optional string imageid (go.tag = "bson:\"iamgeid,omitempty\""),
+}
 
+struct SportActivity {
+  1: optional string id (go.tag = "bson:\"activityid,omitempty\""),
+  2: optional string hostid (go.tag = "bson:\"hostid,omitempty\""),
+  3: optional string sport (go.tag = "bson:\"sportid,omitempty\""),
+  4: optional string area (go.tag = "bson:\"areaid,omitempty\""),
 }
 
 struct City {
