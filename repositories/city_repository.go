@@ -110,6 +110,12 @@ func (rep *CityRepository) MongoCityToCity(city *City) (*services.City) {
 	}
 }
 
+func (rep *CityRepository) AnnounceActivity(cityid string, activityid string) error {
+	_, err := rep.mongo.Collection.Upsert(bson.M{"cityid": cityid}, bson.M{"$addToSet": bson.M{"sportactivities":activityid}})
+
+	return err
+}
+
 func (rep *CityRepository) GetAllCities() ([]*services.City, error) {
 	var cities []*City
 	rep.mongo.Collection.Find(bson.M{}).All(&cities)

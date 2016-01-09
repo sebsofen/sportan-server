@@ -124,16 +124,16 @@ func (p *AreaSvcClient) recvCreateArea() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error94 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error95 error
-		error95, err = error94.Read(iprot)
+		error117 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error118 error
+		error118, err = error117.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error95
+		err = error118
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -202,16 +202,16 @@ func (p *AreaSvcClient) recvUpdateArea() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error96 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error97 error
-		error97, err = error96.Read(iprot)
+		error119 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error120 error
+		error120, err = error119.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error97
+		err = error120
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -280,16 +280,16 @@ func (p *AreaSvcClient) recvDeleteArea() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error98 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error99 error
-		error99, err = error98.Read(iprot)
+		error121 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error122 error
+		error122, err = error121.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error99
+		err = error122
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -358,16 +358,16 @@ func (p *AreaSvcClient) recvGetAreaById() (value *Area, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error100 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error101 error
-		error101, err = error100.Read(iprot)
+		error123 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error124 error
+		error124, err = error123.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error101
+		err = error124
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -439,16 +439,16 @@ func (p *AreaSvcClient) recvWasHere() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error102 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error103 error
-		error103, err = error102.Read(iprot)
+		error125 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error126 error
+		error126, err = error125.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error103
+		err = error126
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -519,16 +519,16 @@ func (p *AreaSvcClient) recvGetNearBy() (value []string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error104 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error105 error
-		error105, err = error104.Read(iprot)
+		error127 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error128 error
+		error128, err = error127.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error105
+		err = error128
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -596,16 +596,16 @@ func (p *AreaSvcClient) recvGetAllAreasInCity() (value []string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error106 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error107 error
-		error107, err = error106.Read(iprot)
+		error129 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error130 error
+		error130, err = error129.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error107
+		err = error130
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -643,15 +643,15 @@ func (p *AreaSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewAreaSvcProcessor(handler AreaSvc) *AreaSvcProcessor {
 
-	self108 := &AreaSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self108.processorMap["createArea"] = &areaSvcProcessorCreateArea{handler: handler}
-	self108.processorMap["updateArea"] = &areaSvcProcessorUpdateArea{handler: handler}
-	self108.processorMap["deleteArea"] = &areaSvcProcessorDeleteArea{handler: handler}
-	self108.processorMap["getAreaById"] = &areaSvcProcessorGetAreaById{handler: handler}
-	self108.processorMap["wasHere"] = &areaSvcProcessorWasHere{handler: handler}
-	self108.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
-	self108.processorMap["getAllAreasInCity"] = &areaSvcProcessorGetAllAreasInCity{handler: handler}
-	return self108
+	self131 := &AreaSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self131.processorMap["createArea"] = &areaSvcProcessorCreateArea{handler: handler}
+	self131.processorMap["updateArea"] = &areaSvcProcessorUpdateArea{handler: handler}
+	self131.processorMap["deleteArea"] = &areaSvcProcessorDeleteArea{handler: handler}
+	self131.processorMap["getAreaById"] = &areaSvcProcessorGetAreaById{handler: handler}
+	self131.processorMap["wasHere"] = &areaSvcProcessorWasHere{handler: handler}
+	self131.processorMap["getNearBy"] = &areaSvcProcessorGetNearBy{handler: handler}
+	self131.processorMap["getAllAreasInCity"] = &areaSvcProcessorGetAllAreasInCity{handler: handler}
+	return self131
 }
 
 func (p *AreaSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -664,12 +664,12 @@ func (p *AreaSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool,
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x109 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x132 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x109.Write(oprot)
+	x132.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x109
+	return false, x132
 
 }
 
@@ -2230,13 +2230,13 @@ func (p *AreaSvcGetNearByResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem110 string
+		var _elem133 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem110 = v
+			_elem133 = v
 		}
-		p.Success = append(p.Success, _elem110)
+		p.Success = append(p.Success, _elem133)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2441,13 +2441,13 @@ func (p *AreaSvcGetAllAreasInCityResult) ReadField0(iprot thrift.TProtocol) erro
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem111 string
+		var _elem134 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem111 = v
+			_elem134 = v
 		}
-		p.Success = append(p.Success, _elem111)
+		p.Success = append(p.Success, _elem134)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

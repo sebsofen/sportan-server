@@ -767,15 +767,17 @@ func (p *Token) String() string {
 //  - Friends
 //  - Friendrequests
 //  - Areasvisits
+//  - AnnouncedActivities
 type User struct {
-	Identifier     *string          `thrift:"identifier,1" bson:"username,omitempty"`
-	Password       *string          `thrift:"password,2" bson:"password,omitempty"`
-	Role           *string          `thrift:"role,3" bson:"role,omitempty"`
-	Profile        *Profile         `thrift:"profile,4" bson:"profile,omitempty"`
-	Token          *Token           `thrift:"token,5" bson:"token,omitempty"`
-	Friends        []string         `thrift:"friends,6" bson:"friends,omitempty"`
-	Friendrequests []string         `thrift:"friendrequests,7" bson:"friendrequests,omitempty"`
-	Areasvisits    map[int64]string `thrift:"areasvisits,8" bson:"areasvisits,omitempty"`
+	Identifier          *string          `thrift:"identifier,1" bson:"username,omitempty"`
+	Password            *string          `thrift:"password,2" bson:"password,omitempty"`
+	Role                *string          `thrift:"role,3" bson:"role,omitempty"`
+	Profile             *Profile         `thrift:"profile,4" bson:"profile,omitempty"`
+	Token               *Token           `thrift:"token,5" bson:"token,omitempty"`
+	Friends             []string         `thrift:"friends,6" bson:"friends,omitempty"`
+	Friendrequests      []string         `thrift:"friendrequests,7" bson:"friendrequests,omitempty"`
+	Areasvisits         map[int64]string `thrift:"areasvisits,8" bson:"areasvisits,omitempty"`
+	AnnouncedActivities []string         `thrift:"announced_activities,9" bson:"announced_activities,omitempty"`
 }
 
 func NewUser() *User {
@@ -844,6 +846,12 @@ var User_Areasvisits_DEFAULT map[int64]string
 func (p *User) GetAreasvisits() map[int64]string {
 	return p.Areasvisits
 }
+
+var User_AnnouncedActivities_DEFAULT []string
+
+func (p *User) GetAnnouncedActivities() []string {
+	return p.AnnouncedActivities
+}
 func (p *User) IsSetIdentifier() bool {
 	return p.Identifier != nil
 }
@@ -874,6 +882,10 @@ func (p *User) IsSetFriendrequests() bool {
 
 func (p *User) IsSetAreasvisits() bool {
 	return p.Areasvisits != nil
+}
+
+func (p *User) IsSetAnnouncedActivities() bool {
+	return p.AnnouncedActivities != nil
 }
 
 func (p *User) Read(iprot thrift.TProtocol) error {
@@ -920,6 +932,10 @@ func (p *User) Read(iprot thrift.TProtocol) error {
 			}
 		case 8:
 			if err := p.ReadField8(iprot); err != nil {
+				return err
+			}
+		case 9:
+			if err := p.ReadField9(iprot); err != nil {
 				return err
 			}
 		default:
@@ -1052,6 +1068,28 @@ func (p *User) ReadField8(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *User) ReadField9(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.AnnouncedActivities = tSlice
+	for i := 0; i < size; i++ {
+		var _elem4 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem4 = v
+		}
+		p.AnnouncedActivities = append(p.AnnouncedActivities, _elem4)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
 func (p *User) Write(oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin("User"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
@@ -1078,6 +1116,9 @@ func (p *User) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField8(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField9(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -1231,6 +1272,29 @@ func (p *User) writeField8(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 8:areasvisits: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *User) writeField9(oprot thrift.TProtocol) (err error) {
+	if p.IsSetAnnouncedActivities() {
+		if err := oprot.WriteFieldBegin("announced_activities", thrift.LIST, 9); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:announced_activities: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.AnnouncedActivities)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.AnnouncedActivities {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 9:announced_activities: ", p), err)
 		}
 	}
 	return err
@@ -2061,13 +2125,13 @@ func (p *Area) ReadField3(iprot thrift.TProtocol) error {
 	tSlice := make([]string, 0, size)
 	p.Sports = tSlice
 	for i := 0; i < size; i++ {
-		var _elem4 string
+		var _elem5 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem4 = v
+			_elem5 = v
 		}
-		p.Sports = append(p.Sports, _elem4)
+		p.Sports = append(p.Sports, _elem5)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2083,13 +2147,13 @@ func (p *Area) ReadField4(iprot thrift.TProtocol) error {
 	tSlice := make([]float64, 0, size)
 	p.Center = tSlice
 	for i := 0; i < size; i++ {
-		var _elem5 float64
+		var _elem6 float64
 		if v, err := iprot.ReadDouble(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem5 = v
+			_elem6 = v
 		}
-		p.Center = append(p.Center, _elem5)
+		p.Center = append(p.Center, _elem6)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2105,11 +2169,11 @@ func (p *Area) ReadField5(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem6 := &Coordinate{}
-		if err := _elem6.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem6), err)
+		_elem7 := &Coordinate{}
+		if err := _elem7.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
 		}
-		p.Coords = append(p.Coords, _elem6)
+		p.Coords = append(p.Coords, _elem7)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2334,14 +2398,614 @@ func (p *Area) String() string {
 
 // Attributes:
 //  - ID
+//  - Hostid
+//  - Sport
+//  - Area
+//  - Cityid
+//  - MaxParticipants
+//  - Date
+//  - Description
+//  - Participants
+//  - ParticipantsRequests
+//  - ActPublic
+type SportActivity struct {
+	ID                   *string  `thrift:"id,1" bson:"activityid,omitempty"`
+	Hostid               *string  `thrift:"hostid,2" bson:"hostid,omitempty"`
+	Sport                *string  `thrift:"sport,3" bson:"sportid,omitempty"`
+	Area                 *string  `thrift:"area,4" bson:"areaid,omitempty"`
+	Cityid               *string  `thrift:"cityid,5" bson:"cityid,omitempty"`
+	MaxParticipants      *int32   `thrift:"max_participants,6" bson:"max_participants,omitempty"`
+	Date                 *int64   `thrift:"date,7" bson:"activity_date,omitempty"`
+	Description          *string  `thrift:"description,8" bson:"description,omitempty"`
+	Participants         []string `thrift:"participants,9" bson:"participants,omitempty"`
+	ParticipantsRequests []string `thrift:"participants_requests,10" bson:"participants_requests,omitempty"`
+	ActPublic            *bool    `thrift:"act_public,11" bson:"act_public,omitempty"`
+}
+
+func NewSportActivity() *SportActivity {
+	return &SportActivity{}
+}
+
+var SportActivity_ID_DEFAULT string
+
+func (p *SportActivity) GetID() string {
+	if !p.IsSetID() {
+		return SportActivity_ID_DEFAULT
+	}
+	return *p.ID
+}
+
+var SportActivity_Hostid_DEFAULT string
+
+func (p *SportActivity) GetHostid() string {
+	if !p.IsSetHostid() {
+		return SportActivity_Hostid_DEFAULT
+	}
+	return *p.Hostid
+}
+
+var SportActivity_Sport_DEFAULT string
+
+func (p *SportActivity) GetSport() string {
+	if !p.IsSetSport() {
+		return SportActivity_Sport_DEFAULT
+	}
+	return *p.Sport
+}
+
+var SportActivity_Area_DEFAULT string
+
+func (p *SportActivity) GetArea() string {
+	if !p.IsSetArea() {
+		return SportActivity_Area_DEFAULT
+	}
+	return *p.Area
+}
+
+var SportActivity_Cityid_DEFAULT string
+
+func (p *SportActivity) GetCityid() string {
+	if !p.IsSetCityid() {
+		return SportActivity_Cityid_DEFAULT
+	}
+	return *p.Cityid
+}
+
+var SportActivity_MaxParticipants_DEFAULT int32
+
+func (p *SportActivity) GetMaxParticipants() int32 {
+	if !p.IsSetMaxParticipants() {
+		return SportActivity_MaxParticipants_DEFAULT
+	}
+	return *p.MaxParticipants
+}
+
+var SportActivity_Date_DEFAULT int64
+
+func (p *SportActivity) GetDate() int64 {
+	if !p.IsSetDate() {
+		return SportActivity_Date_DEFAULT
+	}
+	return *p.Date
+}
+
+var SportActivity_Description_DEFAULT string
+
+func (p *SportActivity) GetDescription() string {
+	if !p.IsSetDescription() {
+		return SportActivity_Description_DEFAULT
+	}
+	return *p.Description
+}
+
+var SportActivity_Participants_DEFAULT []string
+
+func (p *SportActivity) GetParticipants() []string {
+	return p.Participants
+}
+
+var SportActivity_ParticipantsRequests_DEFAULT []string
+
+func (p *SportActivity) GetParticipantsRequests() []string {
+	return p.ParticipantsRequests
+}
+
+var SportActivity_ActPublic_DEFAULT bool
+
+func (p *SportActivity) GetActPublic() bool {
+	if !p.IsSetActPublic() {
+		return SportActivity_ActPublic_DEFAULT
+	}
+	return *p.ActPublic
+}
+func (p *SportActivity) IsSetID() bool {
+	return p.ID != nil
+}
+
+func (p *SportActivity) IsSetHostid() bool {
+	return p.Hostid != nil
+}
+
+func (p *SportActivity) IsSetSport() bool {
+	return p.Sport != nil
+}
+
+func (p *SportActivity) IsSetArea() bool {
+	return p.Area != nil
+}
+
+func (p *SportActivity) IsSetCityid() bool {
+	return p.Cityid != nil
+}
+
+func (p *SportActivity) IsSetMaxParticipants() bool {
+	return p.MaxParticipants != nil
+}
+
+func (p *SportActivity) IsSetDate() bool {
+	return p.Date != nil
+}
+
+func (p *SportActivity) IsSetDescription() bool {
+	return p.Description != nil
+}
+
+func (p *SportActivity) IsSetParticipants() bool {
+	return p.Participants != nil
+}
+
+func (p *SportActivity) IsSetParticipantsRequests() bool {
+	return p.ParticipantsRequests != nil
+}
+
+func (p *SportActivity) IsSetActPublic() bool {
+	return p.ActPublic != nil
+}
+
+func (p *SportActivity) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.ReadField3(iprot); err != nil {
+				return err
+			}
+		case 4:
+			if err := p.ReadField4(iprot); err != nil {
+				return err
+			}
+		case 5:
+			if err := p.ReadField5(iprot); err != nil {
+				return err
+			}
+		case 6:
+			if err := p.ReadField6(iprot); err != nil {
+				return err
+			}
+		case 7:
+			if err := p.ReadField7(iprot); err != nil {
+				return err
+			}
+		case 8:
+			if err := p.ReadField8(iprot); err != nil {
+				return err
+			}
+		case 9:
+			if err := p.ReadField9(iprot); err != nil {
+				return err
+			}
+		case 10:
+			if err := p.ReadField10(iprot); err != nil {
+				return err
+			}
+		case 11:
+			if err := p.ReadField11(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ID = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Hostid = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Sport = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.Area = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 5: ", err)
+	} else {
+		p.Cityid = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.MaxParticipants = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 7: ", err)
+	} else {
+		p.Date = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField8(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 8: ", err)
+	} else {
+		p.Description = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField9(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.Participants = tSlice
+	for i := 0; i < size; i++ {
+		var _elem8 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem8 = v
+		}
+		p.Participants = append(p.Participants, _elem8)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField10(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.ParticipantsRequests = tSlice
+	for i := 0; i < size; i++ {
+		var _elem9 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem9 = v
+		}
+		p.ParticipantsRequests = append(p.ParticipantsRequests, _elem9)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivity) ReadField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 11: ", err)
+	} else {
+		p.ActPublic = &v
+	}
+	return nil
+}
+
+func (p *SportActivity) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SportActivity"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField5(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField6(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField7(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField8(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField9(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField10(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField11(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivity) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetID() {
+		if err := oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:id: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.ID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.id (1) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:id: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetHostid() {
+		if err := oprot.WriteFieldBegin("hostid", thrift.STRING, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:hostid: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Hostid)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.hostid (2) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:hostid: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField3(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSport() {
+		if err := oprot.WriteFieldBegin("sport", thrift.STRING, 3); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:sport: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Sport)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.sport (3) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 3:sport: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField4(oprot thrift.TProtocol) (err error) {
+	if p.IsSetArea() {
+		if err := oprot.WriteFieldBegin("area", thrift.STRING, 4); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:area: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Area)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.area (4) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:area: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField5(oprot thrift.TProtocol) (err error) {
+	if p.IsSetCityid() {
+		if err := oprot.WriteFieldBegin("cityid", thrift.STRING, 5); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:cityid: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Cityid)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.cityid (5) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:cityid: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField6(oprot thrift.TProtocol) (err error) {
+	if p.IsSetMaxParticipants() {
+		if err := oprot.WriteFieldBegin("max_participants", thrift.I32, 6); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:max_participants: ", p), err)
+		}
+		if err := oprot.WriteI32(int32(*p.MaxParticipants)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.max_participants (6) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 6:max_participants: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField7(oprot thrift.TProtocol) (err error) {
+	if p.IsSetDate() {
+		if err := oprot.WriteFieldBegin("date", thrift.I64, 7); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:date: ", p), err)
+		}
+		if err := oprot.WriteI64(int64(*p.Date)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.date (7) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 7:date: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField8(oprot thrift.TProtocol) (err error) {
+	if p.IsSetDescription() {
+		if err := oprot.WriteFieldBegin("description", thrift.STRING, 8); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:description: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.Description)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.description (8) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 8:description: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField9(oprot thrift.TProtocol) (err error) {
+	if p.IsSetParticipants() {
+		if err := oprot.WriteFieldBegin("participants", thrift.LIST, 9); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:participants: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.Participants)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Participants {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 9:participants: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField10(oprot thrift.TProtocol) (err error) {
+	if p.IsSetParticipantsRequests() {
+		if err := oprot.WriteFieldBegin("participants_requests", thrift.LIST, 10); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:participants_requests: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.ParticipantsRequests)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.ParticipantsRequests {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 10:participants_requests: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) writeField11(oprot thrift.TProtocol) (err error) {
+	if p.IsSetActPublic() {
+		if err := oprot.WriteFieldBegin("act_public", thrift.BOOL, 11); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:act_public: ", p), err)
+		}
+		if err := oprot.WriteBool(bool(*p.ActPublic)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.act_public (11) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 11:act_public: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SportActivity) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportActivity(%+v)", *p)
+}
+
+// Attributes:
+//  - ID
 //  - Name
 //  - Coords
 //  - Center
+//  - Sportactivities
 type City struct {
-	ID     string        `thrift:"id,1,required" bson:"cityid,omitempty"`
-	Name   string        `thrift:"name,2,required" bson:"name,omitempty"`
-	Coords []*Coordinate `thrift:"coords,3" bson:"coords,omitempty"`
-	Center *Coordinate   `thrift:"center,4" bson:"center,omitempty"`
+	ID              string        `thrift:"id,1,required" bson:"cityid,omitempty"`
+	Name            string        `thrift:"name,2,required" bson:"name,omitempty"`
+	Coords          []*Coordinate `thrift:"coords,3" bson:"coords,omitempty"`
+	Center          *Coordinate   `thrift:"center,4" bson:"center,omitempty"`
+	Sportactivities []string      `thrift:"sportactivities,5" bson:"sportactivities,omitempty"`
 }
 
 func NewCity() *City {
@@ -2370,12 +3034,22 @@ func (p *City) GetCenter() *Coordinate {
 	}
 	return p.Center
 }
+
+var City_Sportactivities_DEFAULT []string
+
+func (p *City) GetSportactivities() []string {
+	return p.Sportactivities
+}
 func (p *City) IsSetCoords() bool {
 	return p.Coords != nil
 }
 
 func (p *City) IsSetCenter() bool {
 	return p.Center != nil
+}
+
+func (p *City) IsSetSportactivities() bool {
+	return p.Sportactivities != nil
 }
 
 func (p *City) Read(iprot thrift.TProtocol) error {
@@ -2411,6 +3085,10 @@ func (p *City) Read(iprot thrift.TProtocol) error {
 			}
 		case 4:
 			if err := p.ReadField4(iprot); err != nil {
+				return err
+			}
+		case 5:
+			if err := p.ReadField5(iprot); err != nil {
 				return err
 			}
 		default:
@@ -2460,11 +3138,11 @@ func (p *City) ReadField3(iprot thrift.TProtocol) error {
 	tSlice := make([]*Coordinate, 0, size)
 	p.Coords = tSlice
 	for i := 0; i < size; i++ {
-		_elem7 := &Coordinate{}
-		if err := _elem7.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
+		_elem10 := &Coordinate{}
+		if err := _elem10.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem10), err)
 		}
-		p.Coords = append(p.Coords, _elem7)
+		p.Coords = append(p.Coords, _elem10)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2476,6 +3154,28 @@ func (p *City) ReadField4(iprot thrift.TProtocol) error {
 	p.Center = &Coordinate{}
 	if err := p.Center.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Center), err)
+	}
+	return nil
+}
+
+func (p *City) ReadField5(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.Sportactivities = tSlice
+	for i := 0; i < size; i++ {
+		var _elem11 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem11 = v
+		}
+		p.Sportactivities = append(p.Sportactivities, _elem11)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
 	}
 	return nil
 }
@@ -2494,6 +3194,9 @@ func (p *City) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField5(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -2564,6 +3267,29 @@ func (p *City) writeField4(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:center: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *City) writeField5(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSportactivities() {
+		if err := oprot.WriteFieldBegin("sportactivities", thrift.LIST, 5); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:sportactivities: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.Sportactivities)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Sportactivities {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:sportactivities: ", p), err)
 		}
 	}
 	return err

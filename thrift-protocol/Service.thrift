@@ -7,6 +7,14 @@ namespace java  sebastians.sportan.networking
 const string ROLE_ADMIN = "admin"
 const string ROLE_SUPERADMIN = "superadmin"
 
+const string SERVICE_SPORTACTIVITY = "Activity"
+
+const string SERVICE_USER = "User"
+const string SERVICE_IMAGE = "Image"
+const string SERVICE_SPORT = "Sport"
+const string SERVICE_CITY = "City"
+const string SERVICE_AREA = "Area"
+
 exception InvalidOperation {
   1: i32 what,
   2: string why,
@@ -44,6 +52,7 @@ struct User {
     6: optional list<string> friends (go.tag = "bson:\"friends,omitempty\""),
     7: optional list<string> friendrequests (go.tag = "bson:\"friendrequests,omitempty\""),
     8: optional map<i64,string> areasvisits (go.tag = "bson:\"areasvisits,omitempty\""),
+    9: optional list<string> announced_activities (go.tag = "bson:\"announced_activities,omitempty\""),
 }
 
 
@@ -84,13 +93,30 @@ struct SportActivity {
   2: optional string hostid (go.tag = "bson:\"hostid,omitempty\""),
   3: optional string sport (go.tag = "bson:\"sportid,omitempty\""),
   4: optional string area (go.tag = "bson:\"areaid,omitempty\""),
+  5: optional string cityid (go.tag = "bson:\"cityid,omitempty\""),
+  6: optional i32 max_participants (go.tag = "bson:\"max_participants,omitempty\""),
+  7: optional i64 date (go.tag = "bson:\"activity_date,omitempty\""),
+  8: optional string description (go.tag = "bson:\"description,omitempty\""),
+  9: optional list<string> participants (go.tag = "bson:\"participants,omitempty\""),
+  10: optional list<string> participants_requests (go.tag = "bson:\"participants_requests,omitempty\""),
+  11: optional bool act_public (go.tag = "bson:\"act_public,omitempty\""),
 }
+
+
 
 struct City {
   1: required string id (go.tag = "bson:\"cityid,omitempty\""),
   2: required string name (go.tag = "bson:\"name,omitempty\""),
   3: optional list<Coordinate> coords (go.tag = "bson:\"coords,omitempty\""),
   4: optional Coordinate center (go.tag = "bson:\"center,omitempty\""),
+  5: optional list<string> sportactivities (go.tag = "bson:\"sportactivities,omitempty\""),
+}
+
+service SportActivitySvc {
+  //create activity and broadcast to friends
+  SportActivity createActivity(1:string token, 2: SportActivity sportactivity);
+  list<string> getAvailableActivityList(1: string token);
+  void getActivity(1:string token, 2: string acitivityid)
 }
 
 

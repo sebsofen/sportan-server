@@ -16,6 +16,12 @@ var _ = bytes.Equal
 
 const ROLE_ADMIN = "admin"
 const ROLE_SUPERADMIN = "superadmin"
+const SERVICE_SPORTACTIVITY = "Activity"
+const SERVICE_USER = "User"
+const SERVICE_IMAGE = "Image"
+const SERVICE_SPORT = "Sport"
+const SERVICE_CITY = "City"
+const SERVICE_AREA = "Area"
 
 func init() {
 }

@@ -93,6 +93,10 @@ func (rep *UserRepository) GetUserByToken(token string) (*services.User,error) {
 }
 
 
+func (rep *UserRepository) AnnounceActivity(receiverid string, activityid string) error {
+	_, err := rep.mongo.Collection.Upsert(bson.M{"username": receiverid}, bson.M{"$addToSet": bson.M{"announced_activities":activityid}})
+	return err
+}
 
 
 func(rep *UserRepository) PutFriendRequest(receiverid string, senderid string) error {

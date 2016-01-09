@@ -27,32 +27,39 @@ func NewAppServer(cfg Configuration) *AppServer {
 	userCollection, err := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, cfg.MongoUser, cfg.MongoPw, "Users")
 	userRepo := repositories.NewUserRepository(userCollection)
 	userHandler := handlers.NewUserHandler(userRepo, metricsLogging)
-	processor.RegisterProcessor("User", services.NewUserSvcProcessor(userHandler))
+	processor.RegisterProcessor(services.SERVICE_USER, services.NewUserSvcProcessor(userHandler))
 
 	//register Image handler and stuff
 	imageCollection, err := databases.NewMongoConfig(cfg.MongoHost,cfg.MongoDatabase, cfg.MongoUser, cfg.MongoPw, "Images")
 	imageRepo := repositories.NewImageRepository(imageCollection)
 	imageHandler := handlers.NewImageHandler(imageRepo,userRepo)
-	processor.RegisterProcessor("Image", services.NewImageSvcProcessor(imageHandler))
+	processor.RegisterProcessor(services.SERVICE_IMAGE, services.NewImageSvcProcessor(imageHandler))
 
 
 	//register city handler and stuff
 	cityCollection, err := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, cfg.MongoUser, cfg.MongoPw, "Cities")
 	cityRepo := repositories.NewCityRepository(cityCollection)
-	processor.RegisterProcessor("City", services.NewCitySvcProcessor(handlers.NewCityHandler(cityRepo, metricsLogging)))
+	processor.RegisterProcessor(services.SERVICE_CITY, services.NewCitySvcProcessor(handlers.NewCityHandler(cityRepo, metricsLogging)))
 
 
 	//register sporthandler and stuff
 	sportCollection, err := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, cfg.MongoUser, cfg.MongoPw, "Sports")
 	sportRepo := repositories.NewSportRepository(sportCollection,imageRepo)
 	sportHandler := handlers.NewSportHandler(sportRepo,userRepo, imageRepo, metricsLogging)
-	processor.RegisterProcessor("Sport", services.NewSportSvcProcessor(sportHandler))
+	processor.RegisterProcessor(services.SERVICE_SPORT, services.NewSportSvcProcessor(sportHandler))
 
 
 	//register area handler and stuff
 	areaCollection, err := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, cfg.MongoUser, cfg.MongoPw, "Areas")
 	areaRepo := repositories.NewAreaRepository(areaCollection)
-	processor.RegisterProcessor("Area", services.NewAreaSvcProcessor(handlers.NewAreaHandler(areaRepo,  userRepo,metricsLogging)))
+	processor.RegisterProcessor(services.SERVICE_AREA, services.NewAreaSvcProcessor(handlers.NewAreaHandler(areaRepo,  userRepo,metricsLogging)))
+
+
+	//register sportActivity handler and stuff
+	sportactivityCollection, err := databases.NewMongoConfig(cfg.MongoHost, cfg.MongoDatabase, cfg.MongoUser, cfg.MongoPw, "Activities")
+	sportactivityRepo := repositories.NewSportActivityRepository(sportactivityCollection)
+	sportactivityHandler := handlers.NewSportActivityHandler(sportactivityRepo,userRepo,areaRepo, cityRepo,metricsLogging)
+	processor.RegisterProcessor(services.SERVICE_SPORTACTIVITY,services.NewSportActivitySvcProcessor(sportactivityHandler))
 
 	if err != nil {
 		panic(err)
