@@ -50,7 +50,7 @@ func (ch *SportActivityHandler) CreateActivity(token string, activity *services.
 		}
 	}
 
-	if *(activity.ActPublic) {
+	if activity.ActPublic != nil || *(activity.ActPublic) {
 		ch.cityR.AnnounceActivity(*(mActivity.Cityid),*(mActivity.ID))
 	}
 
