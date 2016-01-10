@@ -119,6 +119,13 @@ func (rep *UserRepository) RemoveFriendRequest(userid string, friendid string) e
 	return err
 }
 
+
+//remove announced sprot activity from users personal activity list (ie due to expiration date )
+func (rep *UserRepository) RemoveAnnouncedSportActivity(userid string, sportactivityid string) error {
+	err := rep.mongo.Collection.Update(bson.M{"username": userid}, bson.M{"$pull": bson.M{"announced_activities":sportactivityid}})
+	return err
+}
+
 func (rep *UserRepository) IsAdmin(userid string) bool {
 	var user *services.User
 	rep.mongo.Collection.Find(bson.M{"username": userid}).One(&user)

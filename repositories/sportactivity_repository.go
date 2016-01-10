@@ -3,6 +3,7 @@ import (
 	"sportan/databases"
 	"sportan/services"
 	"github.com/nu7hatch/gouuid"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type SportActivityRepository struct {
@@ -18,9 +19,10 @@ func NewSportActivityRepository(mConfig *databases.MongoConfig) *SportActivityRe
 
 func (repo *SportActivityRepository) CreateSportActivity(activity *services.SportActivity) (*services.SportActivity, error) {
 
-	if activity.GetID() == nil {
+	if activity.GetID() == "" {
 		u, _ := uuid.NewV4()
-		activity.ID = u.String()
+		id := u.String()
+		activity.ID = &id
 	}
 
 	err := repo.mongo.Collection.Insert(activity)
@@ -28,3 +30,11 @@ func (repo *SportActivityRepository) CreateSportActivity(activity *services.Spor
 	return activity, err
 
 }
+
+func (repo *SportActivityRepository) GetSportActivity(id string) (*services.SportActivity, error) {
+	var activity *services.SportActivity
+	err := repo.mongo.Collection.Find(bson.M{"activityid": id}).One(&activity)
+	return activity, err
+}
+
+

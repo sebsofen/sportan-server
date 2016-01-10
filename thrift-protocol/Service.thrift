@@ -116,7 +116,7 @@ service SportActivitySvc {
   //create activity and broadcast to friends
   SportActivity createActivity(1:string token, 2: SportActivity sportactivity);
   list<string> getAvailableActivityList(1: string token);
-  void getActivity(1:string token, 2: string acitivityid)
+  SportActivity getActivity(1:string token, 2: string acitivityid)
 }
 
 
