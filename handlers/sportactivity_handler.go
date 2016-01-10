@@ -50,6 +50,9 @@ func (ch *SportActivityHandler) CreateActivity(token string, activity *services.
 		}
 	}
 
+	//Announce activity to user himself:
+	ch.userR.AnnounceActivity(*(mActivity.Hostid),*(mActivity.ID))
+
 	if activity.ActPublic != nil && *(activity.ActPublic) == true {
 		ch.cityR.AnnounceActivity(*(mActivity.Cityid),*(mActivity.ID))
 	}
