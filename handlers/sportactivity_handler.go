@@ -76,7 +76,7 @@ func (ch *SportActivityHandler) GetAvailableActivityList(token string) ([]string
 	if user.AnnouncedActivities != nil {
 		for _, activityid := range user.AnnouncedActivities {
 			sportActivity, err  := ch.repo.GetSportActivity(activityid)
-			if err != nil || sportActivity.Date != nil || *(sportActivity.Date) < curTS{
+			if err != nil || sportActivity.Date == nil || *(sportActivity.Date) < curTS{
 				ch.userR.RemoveAnnouncedSportActivity(userid,activityid)
 				continue
 			}
