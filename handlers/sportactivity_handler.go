@@ -53,12 +53,15 @@ func (ch *SportActivityHandler) CreateActivity(token string, activity *services.
 	//Announce activity to user himself:
 	ch.userR.AnnounceActivity(*(mActivity.Hostid),*(mActivity.ID))
 
+
 	if activity.ActPublic != nil && *(activity.ActPublic) == true {
 		ch.cityR.AnnounceActivity(*(mActivity.Cityid),*(mActivity.ID))
 	}
 
 
-
+	//finally add first participant to activity;
+	//TODO this is disabled for debugging reasons
+	//ch.repo.JoinUser(userid,*(mActivity.ID))
 	return mActivity, err
 
 }
