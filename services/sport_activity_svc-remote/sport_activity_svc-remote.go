@@ -23,6 +23,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  SportActivity createActivity(string token, SportActivity sportactivity)")
 	fmt.Fprintln(os.Stderr, "   getAvailableActivityList(string token)")
 	fmt.Fprintln(os.Stderr, "  SportActivity getActivity(string token, string acitivityid)")
+	fmt.Fprintln(os.Stderr, "  void joinActivity(string token, string activityid)")
+	fmt.Fprintln(os.Stderr, "  void declineActivity(string token, string activityid)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -124,19 +126,19 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		arg22 := flag.Arg(2)
-		mbTrans23 := thrift.NewTMemoryBufferLen(len(arg22))
-		defer mbTrans23.Close()
-		_, err24 := mbTrans23.WriteString(arg22)
-		if err24 != nil {
+		arg26 := flag.Arg(2)
+		mbTrans27 := thrift.NewTMemoryBufferLen(len(arg26))
+		defer mbTrans27.Close()
+		_, err28 := mbTrans27.WriteString(arg26)
+		if err28 != nil {
 			Usage()
 			return
 		}
-		factory25 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt26 := factory25.GetProtocol(mbTrans23)
+		factory29 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt30 := factory29.GetProtocol(mbTrans27)
 		argvalue1 := services.NewSportActivity()
-		err27 := argvalue1.Read(jsProt26)
-		if err27 != nil {
+		err31 := argvalue1.Read(jsProt30)
+		if err31 != nil {
 			Usage()
 			return
 		}
@@ -164,6 +166,30 @@ func main() {
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
 		fmt.Print(client.GetActivity(value0, value1))
+		fmt.Print("\n")
+		break
+	case "joinActivity":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "JoinActivity requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.JoinActivity(value0, value1))
+		fmt.Print("\n")
+		break
+	case "declineActivity":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "DeclineActivity requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.DeclineActivity(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":

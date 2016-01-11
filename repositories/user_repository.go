@@ -177,6 +177,7 @@ func (rep *UserRepository) SetAdmin(userid string, admin bool) error{
 }
 
 
+
 //hash password
 func (rep *UserRepository) HashPw(text string) string {
 	hasher := md5.New()

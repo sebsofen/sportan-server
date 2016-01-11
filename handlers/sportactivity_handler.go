@@ -96,3 +96,54 @@ func (ch *SportActivityHandler) GetActivity(token string, activityid string) (*s
 	activity, err := ch.repo.GetSportActivity(activityid)
 	return activity, err
 }
+
+func (ch *SportActivityHandler) JoinActivity(token string, activityid string) error {
+
+	curTS := time.Now().UnixNano() / int64(time.Millisecond)
+	userid, err := ch.userR.GetUserIdFromToken(token)
+	if err != nil{
+		return err
+	}
+	user, err := ch.userR.GetFullUserInfo(userid)
+	if err != nil {
+		return err
+	}
+
+	if user.AnnouncedActivities != nil {
+		isInvited := false
+		for _, uActivityid := range user.AnnouncedActivities {
+			if activityid == uActivityid {
+				isInvited = true
+			}
+		}
+
+		if isInvited {
+			sportActivity, err := ch.repo.GetSportActivity(activityid)
+			if err != nil {
+				return err
+			}
+
+			if  sportActivity.Date != nil && *(sportActivity.Date) < curTS{
+				if sportActivity.Participants == nil || len(sportActivity.Participants) <  int(*(sportActivity.MaxParticipants)) {
+					ch.repo.JoinUser(userid,activityid)
+				}
+			}
+
+
+
+
+		}
+	}
+
+	return nil
+}
+
+
+func (ch *SportActivityHandler) DeclineActivity(token string, activityid string) error {
+	userid, err := ch.userR.GetUserIdFromToken(token)
+	if err != nil{
+		return err
+	}
+	err = ch.userR.RemoveAnnouncedSportActivity(userid, activityid)
+	return err
+}

@@ -106,16 +106,16 @@ func (p *SportSvcClient) recvCreateSport() (value *Sport, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error31 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error32 error
-		error32, err = error31.Read(iprot)
+		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error40 error
+		error40, err = error39.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error32
+		err = error40
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -183,16 +183,16 @@ func (p *SportSvcClient) recvGetAllSports() (value []*Sport, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error33 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error34 error
-		error34, err = error33.Read(iprot)
+		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error42 error
+		error42, err = error41.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error34
+		err = error42
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -262,16 +262,16 @@ func (p *SportSvcClient) recvGetSportById() (value *Sport, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error35 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error36 error
-		error36, err = error35.Read(iprot)
+		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error44 error
+		error44, err = error43.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error36
+		err = error44
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -309,11 +309,11 @@ func (p *SportSvcProcessor) ProcessorMap() map[string]thrift.TProcessorFunction 
 
 func NewSportSvcProcessor(handler SportSvc) *SportSvcProcessor {
 
-	self37 := &SportSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self37.processorMap["createSport"] = &sportSvcProcessorCreateSport{handler: handler}
-	self37.processorMap["getAllSports"] = &sportSvcProcessorGetAllSports{handler: handler}
-	self37.processorMap["getSportById"] = &sportSvcProcessorGetSportById{handler: handler}
-	return self37
+	self45 := &SportSvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self45.processorMap["createSport"] = &sportSvcProcessorCreateSport{handler: handler}
+	self45.processorMap["getAllSports"] = &sportSvcProcessorGetAllSports{handler: handler}
+	self45.processorMap["getSportById"] = &sportSvcProcessorGetSportById{handler: handler}
+	return self45
 }
 
 func (p *SportSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -326,12 +326,12 @@ func (p *SportSvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x38 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x46 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x38.Write(oprot)
+	x46.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x38
+	return false, x46
 
 }
 
@@ -867,11 +867,11 @@ func (p *SportSvcGetAllSportsResult) ReadField0(iprot thrift.TProtocol) error {
 	tSlice := make([]*Sport, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem39 := &Sport{}
-		if err := _elem39.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem39), err)
+		_elem47 := &Sport{}
+		if err := _elem47.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem47), err)
 		}
-		p.Success = append(p.Success, _elem39)
+		p.Success = append(p.Success, _elem47)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

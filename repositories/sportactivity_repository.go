@@ -37,4 +37,9 @@ func (repo *SportActivityRepository) GetSportActivity(id string) (*services.Spor
 	return activity, err
 }
 
+func (repo *SportActivityRepository) JoinUser(userid string, activityid string) error {
+	_, err := repo.mongo.Collection.Upsert(bson.M{"activityid": activityid}, bson.M{"$addToSet": bson.M{"participants":userid}})
+	return err
+}
+
 

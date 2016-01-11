@@ -26,6 +26,14 @@ type SportActivitySvc interface {
 	//  - Token
 	//  - Acitivityid
 	GetActivity(token string, acitivityid string) (r *SportActivity, err error)
+	// Parameters:
+	//  - Token
+	//  - Activityid
+	JoinActivity(token string, activityid string) (err error)
+	// Parameters:
+	//  - Token
+	//  - Activityid
+	DeclineActivity(token string, activityid string) (err error)
 }
 
 type SportActivitySvcClient struct {
@@ -289,6 +297,162 @@ func (p *SportActivitySvcClient) recvGetActivity() (value *SportActivity, err er
 	return
 }
 
+// Parameters:
+//  - Token
+//  - Activityid
+func (p *SportActivitySvcClient) JoinActivity(token string, activityid string) (err error) {
+	if err = p.sendJoinActivity(token, activityid); err != nil {
+		return
+	}
+	return p.recvJoinActivity()
+}
+
+func (p *SportActivitySvcClient) sendJoinActivity(token string, activityid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("joinActivity", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := SportActivitySvcJoinActivityArgs{
+		Token:      token,
+		Activityid: activityid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *SportActivitySvcClient) recvJoinActivity() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "joinActivity" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "joinActivity failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "joinActivity failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error18 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error19 error
+		error19, err = error18.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error19
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "joinActivity failed: invalid message type")
+		return
+	}
+	result := SportActivitySvcJoinActivityResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Token
+//  - Activityid
+func (p *SportActivitySvcClient) DeclineActivity(token string, activityid string) (err error) {
+	if err = p.sendDeclineActivity(token, activityid); err != nil {
+		return
+	}
+	return p.recvDeclineActivity()
+}
+
+func (p *SportActivitySvcClient) sendDeclineActivity(token string, activityid string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("declineActivity", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := SportActivitySvcDeclineActivityArgs{
+		Token:      token,
+		Activityid: activityid,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *SportActivitySvcClient) recvDeclineActivity() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "declineActivity" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "declineActivity failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "declineActivity failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error21 error
+		error21, err = error20.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error21
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "declineActivity failed: invalid message type")
+		return
+	}
+	result := SportActivitySvcDeclineActivityResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	return
+}
+
 type SportActivitySvcProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
 	handler      SportActivitySvc
@@ -309,11 +473,13 @@ func (p *SportActivitySvcProcessor) ProcessorMap() map[string]thrift.TProcessorF
 
 func NewSportActivitySvcProcessor(handler SportActivitySvc) *SportActivitySvcProcessor {
 
-	self18 := &SportActivitySvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self18.processorMap["createActivity"] = &sportActivitySvcProcessorCreateActivity{handler: handler}
-	self18.processorMap["getAvailableActivityList"] = &sportActivitySvcProcessorGetAvailableActivityList{handler: handler}
-	self18.processorMap["getActivity"] = &sportActivitySvcProcessorGetActivity{handler: handler}
-	return self18
+	self22 := &SportActivitySvcProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self22.processorMap["createActivity"] = &sportActivitySvcProcessorCreateActivity{handler: handler}
+	self22.processorMap["getAvailableActivityList"] = &sportActivitySvcProcessorGetAvailableActivityList{handler: handler}
+	self22.processorMap["getActivity"] = &sportActivitySvcProcessorGetActivity{handler: handler}
+	self22.processorMap["joinActivity"] = &sportActivitySvcProcessorJoinActivity{handler: handler}
+	self22.processorMap["declineActivity"] = &sportActivitySvcProcessorDeclineActivity{handler: handler}
+	return self22
 }
 
 func (p *SportActivitySvcProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -326,12 +492,12 @@ func (p *SportActivitySvcProcessor) Process(iprot, oprot thrift.TProtocol) (succ
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x19 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x23 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x19.Write(oprot)
+	x23.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x19
+	return false, x23
 
 }
 
@@ -462,6 +628,96 @@ func (p *sportActivitySvcProcessorGetActivity) Process(seqId int32, iprot, oprot
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("getActivity", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type sportActivitySvcProcessorJoinActivity struct {
+	handler SportActivitySvc
+}
+
+func (p *sportActivitySvcProcessorJoinActivity) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := SportActivitySvcJoinActivityArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("joinActivity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := SportActivitySvcJoinActivityResult{}
+	var err2 error
+	if err2 = p.handler.JoinActivity(args.Token, args.Activityid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing joinActivity: "+err2.Error())
+		oprot.WriteMessageBegin("joinActivity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("joinActivity", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type sportActivitySvcProcessorDeclineActivity struct {
+	handler SportActivitySvc
+}
+
+func (p *sportActivitySvcProcessorDeclineActivity) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := SportActivitySvcDeclineActivityArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("declineActivity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := SportActivitySvcDeclineActivityResult{}
+	var err2 error
+	if err2 = p.handler.DeclineActivity(args.Token, args.Activityid); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing declineActivity: "+err2.Error())
+		oprot.WriteMessageBegin("declineActivity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("declineActivity", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -867,13 +1123,13 @@ func (p *SportActivitySvcGetAvailableActivityListResult) ReadField0(iprot thrift
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem20 string
+		var _elem24 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem20 = v
+			_elem24 = v
 		}
-		p.Success = append(p.Success, _elem20)
+		p.Success = append(p.Success, _elem24)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -1152,4 +1408,362 @@ func (p *SportActivitySvcGetActivityResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("SportActivitySvcGetActivityResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Activityid
+type SportActivitySvcJoinActivityArgs struct {
+	Token      string `thrift:"token,1" db:"token" json:"token"`
+	Activityid string `thrift:"activityid,2" db:"activityid" json:"activityid"`
+}
+
+func NewSportActivitySvcJoinActivityArgs() *SportActivitySvcJoinActivityArgs {
+	return &SportActivitySvcJoinActivityArgs{}
+}
+
+func (p *SportActivitySvcJoinActivityArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *SportActivitySvcJoinActivityArgs) GetActivityid() string {
+	return p.Activityid
+}
+func (p *SportActivitySvcJoinActivityArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcJoinActivityArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *SportActivitySvcJoinActivityArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Activityid = v
+	}
+	return nil
+}
+
+func (p *SportActivitySvcJoinActivityArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("joinActivity_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcJoinActivityArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *SportActivitySvcJoinActivityArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("activityid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:activityid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Activityid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.activityid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:activityid: ", p), err)
+	}
+	return err
+}
+
+func (p *SportActivitySvcJoinActivityArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportActivitySvcJoinActivityArgs(%+v)", *p)
+}
+
+type SportActivitySvcJoinActivityResult struct {
+}
+
+func NewSportActivitySvcJoinActivityResult() *SportActivitySvcJoinActivityResult {
+	return &SportActivitySvcJoinActivityResult{}
+}
+
+func (p *SportActivitySvcJoinActivityResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcJoinActivityResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("joinActivity_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcJoinActivityResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportActivitySvcJoinActivityResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Token
+//  - Activityid
+type SportActivitySvcDeclineActivityArgs struct {
+	Token      string `thrift:"token,1" db:"token" json:"token"`
+	Activityid string `thrift:"activityid,2" db:"activityid" json:"activityid"`
+}
+
+func NewSportActivitySvcDeclineActivityArgs() *SportActivitySvcDeclineActivityArgs {
+	return &SportActivitySvcDeclineActivityArgs{}
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) GetToken() string {
+	return p.Token
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) GetActivityid() string {
+	return p.Activityid
+}
+func (p *SportActivitySvcDeclineActivityArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Activityid = v
+	}
+	return nil
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("declineActivity_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("activityid", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:activityid: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Activityid)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.activityid (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:activityid: ", p), err)
+	}
+	return err
+}
+
+func (p *SportActivitySvcDeclineActivityArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportActivitySvcDeclineActivityArgs(%+v)", *p)
+}
+
+type SportActivitySvcDeclineActivityResult struct {
+}
+
+func NewSportActivitySvcDeclineActivityResult() *SportActivitySvcDeclineActivityResult {
+	return &SportActivitySvcDeclineActivityResult{}
+}
+
+func (p *SportActivitySvcDeclineActivityResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcDeclineActivityResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("declineActivity_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SportActivitySvcDeclineActivityResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SportActivitySvcDeclineActivityResult(%+v)", *p)
 }
