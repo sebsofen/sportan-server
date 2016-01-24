@@ -26,11 +26,9 @@ func NewSportRepository(mConfig *databases.MongoConfig, repoI *ImageRepository) 
 func (rep *SportRepository) CreateSport(sport *services.Sport ) (*services.Sport){
 	u, _ := uuid.NewV4()
 	sportId := u.String()
+	sport.ID = &sportId
 
 	rep.mongo.Collection.Insert(sport)
-
-
-	sport.ID = &sportId
 	return sport
 
 }
