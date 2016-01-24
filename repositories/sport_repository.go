@@ -24,8 +24,6 @@ func NewSportRepository(mConfig *databases.MongoConfig, repoI *ImageRepository) 
 }
 
 func (rep *SportRepository) CreateSport(sport *services.Sport ) (*services.Sport){
-	rep.repoI.SaveImage(sport.Icon)
-	//will update sport.Icon automatically.
 	u, _ := uuid.NewV4()
 	sportId := u.String()
 
