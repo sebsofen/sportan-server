@@ -67,6 +67,9 @@ func (rep *AreaRepository) GetAreaById(areaid string) *services.Area {
 	var area *services.Area
 	rep.mongo.Collection.Find(bson.M{"areaid" : areaid}).One(&area)
 
+
+	area.Coords = nil
+
 	return area
 }
 
