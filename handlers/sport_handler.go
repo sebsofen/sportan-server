@@ -34,6 +34,9 @@ func (ch *SportHandler) CreateSport(token string, sport *services.Sport) (*servi
 		if sport.Icon != nil && sport.Icon.Content != nil {
 			//image was transmitted with sport.
 			//create new image
+			image, _ := ch.imageR.SaveImage(sport.Icon)
+			sport.Icon = nil
+			sport.Iconid = image.ID
 			ch.repo.CreateSport(sport)
 		}
 	}
